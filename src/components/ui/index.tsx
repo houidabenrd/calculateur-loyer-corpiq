@@ -236,48 +236,67 @@ interface StepIndicatorProps {
   totalSteps: number;
   steps: { id: number; title: string; description: string }[];
   onStepClick?: (step: number) => void;
+  canAccessStep?: (step: number) => boolean;
+  disabledMessage?: string;
 }
 
 export const StepIndicator: React.FC<StepIndicatorProps> = ({ 
   currentStep, 
   steps,
-  onStepClick 
+  onStepClick,
+  canAccessStep,
+  disabledMessage
 }) => (
   <div className="mb-8">
     <div className="flex items-center justify-between">
-      {steps.map((step, index) => (
-        <React.Fragment key={step.id}>
-          <button
-            type="button"
-            onClick={() => onStepClick?.(step.id)}
-            className={`flex flex-col items-center cursor-pointer group ${
-              onStepClick ? 'hover:opacity-80' : ''
-            }`}
-          >
-            <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
-                step.id < currentStep
-                  ? 'bg-green-500 text-white'
-                  : step.id === currentStep
-                  ? 'bg-corpiq-blue text-white'
-                  : 'bg-gray-200 text-gray-500'
+      {steps.map((step, index) => {
+        const isAccessible = canAccessStep ? canAccessStep(step.id) : true;
+        const isClickable = onStepClick && isAccessible;
+        
+        return (
+          <React.Fragment key={step.id}>
+            <button
+              type="button"
+              onClick={() => isClickable && onStepClick(step.id)}
+              disabled={!isClickable}
+              className={`flex flex-col items-center transition-all ${
+                isClickable 
+                  ? 'cursor-pointer group hover:opacity-80' 
+                  : 'cursor-not-allowed opacity-50'
               }`}
+              title={!isAccessible ? disabledMessage : undefined}
             >
-              {step.id < currentStep ? '✓' : step.id}
-            </div>
-            <span className={`text-xs mt-2 text-center hidden md:block ${
-              step.id === currentStep ? 'font-semibold text-corpiq-blue' : 'text-gray-500'
-            }`}>
-              {step.title}
-            </span>
-          </button>
-          {index < steps.length - 1 && (
-            <div className={`flex-1 h-1 mx-2 ${
-              step.id < currentStep ? 'bg-green-500' : 'bg-gray-200'
-            }`} />
-          )}
-        </React.Fragment>
-      ))}
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
+                  step.id < currentStep
+                    ? 'bg-green-500 text-white'
+                    : step.id === currentStep
+                    ? 'bg-corpiq-blue text-white'
+                    : isAccessible
+                    ? 'bg-gray-200 text-gray-500'
+                    : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                {step.id < currentStep ? '✓' : step.id}
+              </div>
+              <span className={`text-xs mt-2 text-center hidden md:block ${
+                step.id === currentStep 
+                  ? 'font-semibold text-corpiq-blue' 
+                  : isAccessible
+                  ? 'text-gray-500'
+                  : 'text-gray-400'
+              }`}>
+                {step.title}
+              </span>
+            </button>
+            {index < steps.length - 1 && (
+              <div className={`flex-1 h-1 mx-2 ${
+                step.id < currentStep ? 'bg-green-500' : 'bg-gray-200'
+              }`} />
+            )}
+          </React.Fragment>
+        );
+      })}
     </div>
   </div>
 );

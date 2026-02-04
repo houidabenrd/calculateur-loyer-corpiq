@@ -28,6 +28,7 @@ function App() {
     nextStep,
     prevStep,
     goToStep,
+    canAccessStep,
   } = useCalculateur();
 
   const handleExportPDF = async () => {
@@ -100,6 +101,8 @@ function App() {
           totalSteps={STEPS.length}
           steps={STEPS}
           onStepClick={goToStep}
+          canAccessStep={canAccessStep}
+          disabledMessage={t.common.completePreviousSteps}
         />
 
         {/* Current step title */}

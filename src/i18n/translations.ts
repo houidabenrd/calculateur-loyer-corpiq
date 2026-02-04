@@ -198,6 +198,7 @@ export interface Translations {
     next: string;
     required: string;
     delete: string;
+    completePreviousSteps: string;
   };
   
   // PDF
@@ -401,6 +402,7 @@ export const translations: Record<Language, Translations> = {
       next: 'Next',
       required: '*',
       delete: 'Delete',
+      completePreviousSteps: 'Complete previous steps first',
     },
     pdf: {
       title: 'Rent Increase Calculator 2026',
@@ -600,6 +602,7 @@ export const translations: Record<Language, Translations> = {
       next: 'Suivant',
       required: '*',
       delete: 'Supprimer',
+      completePreviousSteps: 'Complétez les étapes précédentes d\'abord',
     },
     pdf: {
       title: 'Calculateur d\'augmentation de loyer 2026',

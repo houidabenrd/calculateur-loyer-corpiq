@@ -185,18 +185,56 @@ export const useCalculateur = () => {
     localStorage.removeItem(STORAGE_KEY);
   }, []);
 
+  // Validation des étapes
+  const isStepValid = useCallback((step: number): boolean => {
+    switch (step) {
+      case 1:
+        // Étape 1 : loyer mensuel actuel requis
+        return formData.loyerMensuelActuel > 0;
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+        // Pour les étapes suivantes, l'étape 1 doit être complète
+        return formData.loyerMensuelActuel > 0;
+      default:
+        return false;
+    }
+  }, [formData.loyerMensuelActuel]);
+
+  // Vérifier si on peut accéder à une étape (toutes les étapes précédentes doivent être complètes)
+  const canAccessStep = useCallback((step: number): boolean => {
+    if (step <= currentStep) {
+      // On peut toujours revenir en arrière
+      return true;
+    }
+    // Pour avancer, toutes les étapes précédentes doivent être complètes
+    for (let i = 1; i < step; i++) {
+      if (!isStepValid(i)) {
+        return false;
+      }
+    }
+    return true;
+  }, [currentStep, isStepValid]);
+
   // Navigation
   const nextStep = useCallback(() => {
-    setCurrentStep(prev => Math.min(prev + 1, 5));
-  }, []);
+    // Vérifier que l'étape actuelle est valide avant d'avancer
+    if (isStepValid(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, 5));
+    }
+  }, [currentStep, isStepValid]);
 
   const prevStep = useCallback(() => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
   }, []);
 
   const goToStep = useCallback((step: number) => {
-    setCurrentStep(Math.max(1, Math.min(step, 5)));
-  }, []);
+    // Ne permettre la navigation que si l'étape est accessible
+    if (canAccessStep(step)) {
+      setCurrentStep(Math.max(1, Math.min(step, 5)));
+    }
+  }, [canAccessStep]);
 
   return {
     formData,
@@ -218,5 +256,7 @@ export const useCalculateur = () => {
     nextStep,
     prevStep,
     goToStep,
+    isStepValid,
+    canAccessStep,
   };
 };
