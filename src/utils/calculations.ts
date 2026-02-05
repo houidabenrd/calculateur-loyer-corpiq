@@ -4,6 +4,7 @@ import {
   CalculatedValues, 
   TAUX_IPC_2026,
   TAUX_SERVICES_AINES_2026,
+  TAUX_IMMOBILISATION_TAL,
   LigneReparation,
   LigneNouvelleDepense,
   LigneVariationAide 
@@ -195,7 +196,73 @@ export const calculAjustementAssurances = (
   return round2(calculAjustementAssurancesBrut(assuranceCourante, assurancePrecedente, loyerMensuel, revenusImmeuble, tauxIPC));
 };
 
-// Calcul ajustement pour une ligne de réparation
+// Calcul ajustement pour une ligne de réparation (version BRUTE sans arrondi)
+// Implémente la logique complète TAL avec prêt à intérêt réduit
+export const calculAjustementReparationBrut = (
+  ligne: LigneReparation,
+  loyerMensuelLogement: number,
+  soustotalNbLogements: number,
+  soustotalLoyerLogements: number,
+  soustotalNbLocaux: number,
+  soustotalLoyerLocaux: number
+): number => {
+  // Si non concerné ou dépense retenue <= 0, retour 0
+  if (!ligne.logementConcerne || ligne.depenseRetenue <= 0) return 0;
+  
+  // 1) Loyer moyen des autres logements résidentiels
+  const loyerMoyResAutres = 
+    soustotalNbLogements <= 1 
+      ? 0 
+      : (soustotalLoyerLogements - loyerMensuelLogement) / (soustotalNbLogements - 1);
+  
+  // 2) Loyer moyen des locaux non résidentiels
+  const loyerMoyNonRes = 
+    soustotalNbLocaux === 0 
+      ? 0 
+      : soustotalLoyerLocaux / soustotalNbLocaux;
+  
+  // 3) Base concernée (pondération TAL)
+  // Le logement concerné compte via loyerMensuelLogement
+  // Les autres logements résidentiels concernés comptent via (nbLogements - 1)
+  const baseConcernee = 
+    loyerMensuelLogement 
+    + Math.max(0, ligne.nbLogements - 1) * loyerMoyResAutres 
+    + ligne.nbLocauxNonResidentiels * loyerMoyNonRes;
+  
+  if (baseConcernee === 0) return 0;
+  
+  // 4) Poids du logement
+  const poids = loyerMensuelLogement / baseConcernee;
+  
+  // 5) Montant annuel admissible (avec prêt à intérêt réduit)
+  const taux = TAUX_IMMOBILISATION_TAL; // 5%
+  const pretMontant = ligne.montantPretReduit || 0;
+  const versementAnnuel = ligne.versementAnnuel || 0;
+  
+  // Partie financée par prêt (plafonnée à la dépense retenue)
+  const partFinancee = Math.min(pretMontant, ligne.depenseRetenue);
+  const partNonFinancee = ligne.depenseRetenue - partFinancee;
+  
+  // Annuel pour la partie NON financée par prêt
+  const annuelNonFinance = taux * partNonFinancee;
+  
+  // Annuel pour la partie financée par prêt (plafonné au versement réel)
+  let annuelFinanceReel = 0;
+  if (partFinancee > 0) {
+    const annuelFinancePotentiel = taux * partFinancee;
+    annuelFinanceReel = Math.min(annuelFinancePotentiel, versementAnnuel);
+  }
+  
+  // Total annuel admissible
+  const annuelAdmissible = annuelNonFinance + annuelFinanceReel;
+  
+  // 6) Ajustement mensuel = (annuel admissible × poids) / 12
+  const mensuelLigneBrut = (annuelAdmissible * poids) / 12;
+  
+  return mensuelLigneBrut;
+};
+
+// Version avec arrondi pour affichage individuel
 export const calculAjustementReparation = (
   ligne: LigneReparation,
   loyerMensuelLogement: number,
@@ -204,35 +271,10 @@ export const calculAjustementReparation = (
   soustotalNbLocaux: number,
   soustotalLoyerLocaux: number
 ): number => {
-  if (!ligne.logementConcerne || ligne.depenseRetenue <= 0) return 0;
-  
-  // Calcul du loyer moyen des autres logements
-  const loyerMoyenAutresLogements = 
-    soustotalNbLogements <= 1 
-      ? 0 
-      : (soustotalLoyerLogements - loyerMensuelLogement) / (soustotalNbLogements - 1);
-  
-  // Calcul du loyer moyen des locaux non résidentiels
-  const loyerMoyenLocaux = 
-    soustotalNbLocaux === 0 
-      ? 0 
-      : soustotalLoyerLocaux / soustotalNbLocaux;
-  
-  // Base concernée (somme pondérée des loyers des unités concernées)
-  const baseConcernee = 
-    loyerMensuelLogement 
-    + Math.max(0, ligne.nbLogements - 1) * loyerMoyenAutresLogements 
-    + ligne.nbLocauxNonResidentiels * loyerMoyenLocaux;
-  
-  if (baseConcernee === 0) return 0;
-  
-  // Poids du logement dans la dépense
-  const poidsLogement = loyerMensuelLogement / baseConcernee;
-  
-  // Ajustement mensuel = (dépense retenue / 20 ans) × poids / 12 mois
-  const ajustementMensuel = (ligne.depenseRetenue / 20) * poidsLogement / 12;
-  
-  return round2(ajustementMensuel);
+  return round2(calculAjustementReparationBrut(
+    ligne, loyerMensuelLogement, soustotalNbLogements, 
+    soustotalLoyerLogements, soustotalNbLocaux, soustotalLoyerLocaux
+  ));
 };
 
 // Calcul ajustement pour une nouvelle dépense
@@ -365,10 +407,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
     ajustementTaxesMunicipalesBrut + ajustementTaxesScolairesBrut + ajustementAssurancesBrut
   );
   
-  // Ajustements réparations
-  let totalAjustementReparations = 0;
+  // Ajustements réparations - somme des valeurs BRUTES puis arrondi unique (règle TAL)
+  let totalAjustementReparationsBrut = 0;
   formData.reparations.forEach(ligne => {
-    const ajust = calculAjustementReparation(
+    const ajustBrut = calculAjustementReparationBrut(
       ligne,
       formData.loyerMensuelActuel,
       sousTotaux.soustotalLogements.nombre,
@@ -376,9 +418,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
       sousTotaux.soustotalNonResidentiels.nombre,
       sousTotaux.soustotalNonResidentiels.loyer
     );
-    totalAjustementReparations += ajust;
+    totalAjustementReparationsBrut += ajustBrut;
   });
-  totalAjustementReparations = round2(totalAjustementReparations);
+  // Arrondi UNIQUE à la fin (règle TAL)
+  const totalAjustementReparations = round2(totalAjustementReparationsBrut);
   
   // Ajustements nouvelles dépenses
   let totalAjustementNouvellesDepenses = 0;

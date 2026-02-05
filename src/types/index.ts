@@ -148,6 +148,7 @@ export const STEPS: StepInfo[] = [
 
 export const TAUX_IPC_2026 = 0.031; // 3.1%
 export const TAUX_SERVICES_AINES_2026 = 0.067; // 6.7% - Taux fixe TAL 2026 pour services à la personne (RPA)
+export const TAUX_IMMOBILISATION_TAL = 0.05; // 5% - Taux d'immobilisation TAL pour réparations/améliorations
 
 export const initialFormData: FormData = {
   adresse: '',
