@@ -61,7 +61,7 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-corpiq-blue text-white shadow-lg">
-        <div className="max-w-5xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
@@ -98,7 +98,7 @@ function App() {
       </header>
 
       {/* Main content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Step indicator */}
         <StepIndicator 
           currentStep={currentStep}
@@ -184,7 +184,7 @@ function App() {
 
       {/* Footer */}
       <footer className="bg-gray-100 border-t border-gray-200 mt-12">
-        <div className="max-w-5xl mx-auto px-4 py-6 text-center text-gray-600 text-sm">
+        <div className="max-w-7xl mx-auto px-4 py-6 text-center text-gray-600 text-sm">
           <p>
             {t.app.footer}
           </p>
