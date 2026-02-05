@@ -72,27 +72,47 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
   id,
 }) => {
   const [displayValue, setDisplayValue] = React.useState('');
+  const [isFocused, setIsFocused] = React.useState(false);
 
+  // Mettre à jour l'affichage uniquement quand la valeur change ET que le champ n'est pas focus
   React.useEffect(() => {
-    if (value === 0) {
-      setDisplayValue('');
-    } else {
-      setDisplayValue(value.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    if (!isFocused) {
+      if (value === 0) {
+        setDisplayValue('');
+      } else {
+        setDisplayValue(value.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      }
     }
-  }, [value]);
+  }, [value, isFocused]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9,.-]/g, '');
     setDisplayValue(rawValue);
+    
+    // Mettre à jour la valeur en temps réel pour déclencher les calculs
+    const parsed = parseFloat(rawValue.replace(',', '.').replace(/\s/g, ''));
+    if (!isNaN(parsed)) {
+      onChange(Math.round(parsed * 100) / 100);
+    } else if (rawValue === '' || rawValue === '-') {
+      onChange(0);
+    }
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
   };
 
   const handleBlur = () => {
+    setIsFocused(false);
+    // Formater proprement à la sortie du champ
     const parsed = parseFloat(displayValue.replace(',', '.').replace(/\s/g, ''));
     if (isNaN(parsed)) {
       onChange(0);
       setDisplayValue('');
     } else {
-      onChange(Math.round(parsed * 100) / 100);
+      const rounded = Math.round(parsed * 100) / 100;
+      onChange(rounded);
+      setDisplayValue(rounded.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
   };
 
@@ -102,6 +122,7 @@ export const CurrencyInput: React.FC<CurrencyInputProps> = ({
       id={id}
       value={displayValue}
       onChange={handleChange}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       placeholder={placeholder}
       disabled={disabled}

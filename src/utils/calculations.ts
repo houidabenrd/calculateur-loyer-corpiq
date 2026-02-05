@@ -10,9 +10,21 @@ import {
   LigneVariationAide 
 } from '../types';
 
-// Arrondir à 2 décimales
+// ROUND_HALF_UP : arrondi commercial (0.5 arrondi vers le haut)
+// Gère correctement les problèmes de précision flottante
+export const roundHalfUp = (num: number, decimals: number): number => {
+  const sign = num >= 0 ? 1 : -1;
+  const abs = Math.abs(num);
+  const factor = Math.pow(10, decimals);
+  // Utiliser toFixed pour éviter les erreurs de précision flottante
+  // Ex: 1.005 * 100 = 100.49999... → toFixed corrige
+  const shifted = parseFloat((abs * factor).toFixed(8));
+  return sign * (Math.floor(shifted + 0.5) / factor);
+};
+
+// Arrondir à 2 décimales (ROUND_HALF_UP)
 export const round2 = (num: number): number => {
-  return Math.round(num * 100) / 100;
+  return roundHalfUp(num, 2);
 };
 
 // Formater en devise canadienne
@@ -548,17 +560,19 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
     totalSection4Brut + // Section 4 brut (5-1 + 5-2)
     ajustementDeneigementBrut; // Section 5 brut
   
-  // Total affiché = arrondi UNIQUE à la fin
-  const totalAjustements = round2(totalAjustementsBrut);
+  // Total affiché = ROUND_HALF_UP(totalBrut, 2)
+  const totalAjustements = roundHalfUp(totalAjustementsBrut, 2);
   
-  // Nouveau loyer recommandé = ROUND(loyerAvant + totalBrut, 0)
+  // Nouveau loyer recommandé = ROUND_HALF_UP(loyerAvant + totalBrut, 0)
   // IMPORTANT: utiliser totalBrut, pas totalAjustements arrondi
-  const nouveauLoyerRecommande = Math.round(formData.loyerMensuelActuel + totalAjustementsBrut);
+  const nouveauLoyerRecommande = roundHalfUp(formData.loyerMensuelActuel + totalAjustementsBrut, 0);
   
-  // Pourcentage de variation = (totalBrut / loyerAvant) × 100
+  // Pourcentage de variation conforme TAL :
+  // pctVariation = (totalAdjBrut / loyerAvant) * 100
+  // pctAffiche = FORMAT_2_DECIMALS( ROUND_HALF_UP(pctVariation, 1) )
   // Arrondi à 1 décimale puis affiché avec 2 décimales (format TAL)
   const pourcentageVariation = formData.loyerMensuelActuel > 0
-    ? Math.round((totalAjustementsBrut / formData.loyerMensuelActuel) * 1000) / 10 // Arrondi à 1 décimale
+    ? roundHalfUp((totalAjustementsBrut / formData.loyerMensuelActuel) * 100, 1)
     : 0;
   
   return {
