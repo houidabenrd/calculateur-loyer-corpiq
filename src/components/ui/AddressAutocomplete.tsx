@@ -28,20 +28,23 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [hasSelected, setHasSelected] = useState(false);
+  const [hasSelected, setHasSelected] = useState(!!value);
+  const [noResults, setNoResults] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Sync external value changes
+  // Sync external value changes (seulement quand le champ n'a pas le focus)
   useEffect(() => {
     if (value !== query && !inputRef.current?.matches(':focus')) {
       setQuery(value);
+      if (value) setHasSelected(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // Close dropdown when clicking outside
+  // Fermer le dropdown quand on clique dehors
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -53,39 +56,70 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   }, []);
 
   const searchAddress = useCallback(async (searchQuery: string) => {
-    if (searchQuery.length < 2) {
+    if (searchQuery.trim().length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
+      setNoResults(false);
       return;
     }
 
+    // Annuler la requête précédente si elle est en cours
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+    abortRef.current = new AbortController();
+
     setIsLoading(true);
+    setNoResults(false);
+
     try {
+      // Ajouter "Québec" au query pour améliorer les résultats
+      const enhancedQuery = searchQuery.includes('QC') || searchQuery.includes('Québec') || searchQuery.includes('Quebec')
+        ? searchQuery
+        : `${searchQuery}, Québec`;
+
       const params = new URLSearchParams({
         format: 'json',
-        q: searchQuery,
+        q: enhancedQuery,
         countrycodes: 'ca',
         limit: '6',
         addressdetails: '1',
+        email: 'calculateur@corpiq.com',
       });
 
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?${params.toString()}`,
         {
+          signal: abortRef.current.signal,
           headers: {
             'Accept-Language': 'fr',
           },
         }
       );
 
-      if (response.ok) {
-        const data: AddressSuggestion[] = await response.json();
-        setSuggestions(data);
-        setShowDropdown(data.length > 0);
-        setHighlightedIndex(-1);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
-    } catch {
+
+      const data: AddressSuggestion[] = await response.json();
+
+      if (data.length > 0) {
+        setSuggestions(data);
+        setShowDropdown(true);
+        setHighlightedIndex(-1);
+        setNoResults(false);
+      } else {
+        setSuggestions([]);
+        setShowDropdown(true);
+        setNoResults(true);
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // Requête annulée, on ne fait rien
+        return;
+      }
       setSuggestions([]);
+      setNoResults(false);
     } finally {
       setIsLoading(false);
     }
@@ -101,64 +135,69 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
-    debounceRef.current = setTimeout(() => {
-      searchAddress(newValue);
-    }, 250);
+
+    if (newValue.trim().length >= 3) {
+      debounceRef.current = setTimeout(() => {
+        searchAddress(newValue);
+      }, 300);
+    } else {
+      setSuggestions([]);
+      setShowDropdown(false);
+      setNoResults(false);
+    }
   };
 
   const handleSelect = (suggestion: AddressSuggestion) => {
-    // Formater l'adresse proprement (enlever les doublons de pays, etc.)
     const cleanAddress = formatDisplayAddress(suggestion.display_name);
     setQuery(cleanAddress);
     onChange(cleanAddress);
     setShowDropdown(false);
     setHasSelected(true);
     setSuggestions([]);
+    setNoResults(false);
   };
 
   const formatDisplayAddress = (displayName: string): string => {
-    // L'API Nominatim retourne des adresses très longues avec doublons
-    // On garde les 4-5 premiers segments pertinents
     const parts = displayName.split(', ');
-    // Supprimer les doublons et les éléments non pertinents
     const seen = new Set<string>();
     const filtered = parts.filter(part => {
       const normalized = part.toLowerCase().trim();
       if (seen.has(normalized)) return false;
-      // Exclure "Canada" à la fin
       if (normalized === 'canada') return false;
       seen.add(normalized);
       return true;
     });
-    // Limiter à 5 segments
     return filtered.slice(0, 5).join(', ');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!showDropdown || suggestions.length === 0) return;
+    if (!showDropdown) return;
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setHighlightedIndex(prev =>
-          prev < suggestions.length - 1 ? prev + 1 : 0
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setHighlightedIndex(prev =>
-          prev > 0 ? prev - 1 : suggestions.length - 1
-        );
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
-          handleSelect(suggestions[highlightedIndex]);
-        }
-        break;
-      case 'Escape':
-        setShowDropdown(false);
-        break;
+    if (suggestions.length > 0) {
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          setHighlightedIndex(prev =>
+            prev < suggestions.length - 1 ? prev + 1 : 0
+          );
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          setHighlightedIndex(prev =>
+            prev > 0 ? prev - 1 : suggestions.length - 1
+          );
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+            handleSelect(suggestions[highlightedIndex]);
+          }
+          break;
+      }
+    }
+
+    if (e.key === 'Escape') {
+      setShowDropdown(false);
     }
   };
 
@@ -168,6 +207,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setSuggestions([]);
     setShowDropdown(false);
     setHasSelected(false);
+    setNoResults(false);
     inputRef.current?.focus();
   };
 
@@ -193,7 +233,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            if (suggestions.length > 0 && !hasSelected) {
+            if (suggestions.length > 0) {
               setShowDropdown(true);
             }
           }}
@@ -215,34 +255,40 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       </div>
 
       {/* Dropdown des suggestions */}
-      {showDropdown && suggestions.length > 0 && (
+      {showDropdown && (
         <div className="absolute z-50 mt-1 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden address-dropdown-enter">
-          <div className="py-1">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={suggestion.place_id}
-                type="button"
-                onClick={() => handleSelect(suggestion)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors ${
-                  index === highlightedIndex
-                    ? 'bg-blue-50 text-corpiq-blue'
-                    : 'hover:bg-gray-50 text-gray-700'
-                }`}
-              >
-                <MapPin
-                  size={16}
-                  className={`flex-shrink-0 mt-0.5 ${
-                    index === highlightedIndex ? 'text-corpiq-blue' : 'text-gray-400'
+          {suggestions.length > 0 ? (
+            <div className="py-1">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={suggestion.place_id}
+                  type="button"
+                  onClick={() => handleSelect(suggestion)}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                  className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors ${
+                    index === highlightedIndex
+                      ? 'bg-blue-50 text-corpiq-blue'
+                      : 'hover:bg-gray-50 text-gray-700'
                   }`}
-                />
-                <span className="text-sm leading-snug">
-                  {formatDisplayAddress(suggestion.display_name)}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                >
+                  <MapPin
+                    size={16}
+                    className={`flex-shrink-0 mt-0.5 ${
+                      index === highlightedIndex ? 'text-corpiq-blue' : 'text-gray-400'
+                    }`}
+                  />
+                  <span className="text-sm leading-snug">
+                    {formatDisplayAddress(suggestion.display_name)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : noResults ? (
+            <div className="px-4 py-3 text-sm text-gray-500 text-center">
+              Aucune adresse trouvée. Essayez avec plus de détails.
+            </div>
+          ) : null}
+          <div className="px-4 py-1.5 bg-gray-50 border-t border-gray-100">
             <span className="text-[10px] text-gray-400">
               © OpenStreetMap
             </span>
