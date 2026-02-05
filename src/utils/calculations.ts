@@ -277,7 +277,50 @@ export const calculAjustementReparation = (
   ));
 };
 
-// Calcul ajustement pour une nouvelle dépense
+// Calcul ajustement pour une nouvelle dépense (version BRUTE sans arrondi)
+// Section 5-1 TAL : mensuel = (depenseRetenue / 12) × poids
+export const calculAjustementNouvelleDepenseBrut = (
+  ligne: LigneNouvelleDepense,
+  loyerMensuelLogement: number,
+  soustotalNbLogements: number,
+  soustotalLoyerLogements: number,
+  soustotalNbLocaux: number,
+  soustotalLoyerLocaux: number
+): number => {
+  // Si non concerné ou dépense retenue <= 0, retour 0
+  if (!ligne.logementConcerne || ligne.depenseRetenue <= 0) return 0;
+  
+  // AA = Loyer moyen des autres logements résidentiels
+  const AA = 
+    soustotalNbLogements <= 1 
+      ? 0 
+      : (soustotalLoyerLogements - loyerMensuelLogement) / (soustotalNbLogements - 1);
+  
+  // AB = Loyer moyen des locaux non résidentiels
+  const AB = 
+    soustotalNbLocaux === 0 
+      ? 0 
+      : soustotalLoyerLocaux / soustotalNbLocaux;
+  
+  // Base concernée = loyer + (nbRes-1)×AA + nbNonRes×AB
+  const baseConcernee = 
+    loyerMensuelLogement 
+    + Math.max(0, ligne.nbLogements - 1) * AA 
+    + ligne.nbLocauxNonResidentiels * AB;
+  
+  if (baseConcernee === 0) return 0;
+  
+  // Poids = loyer / base
+  const poids = loyerMensuelLogement / baseConcernee;
+  
+  // Mensuel brut = (depenseRetenue / 12) × poids
+  // Pas d'amortissement sur 20 ans pour les nouvelles dépenses
+  const mensuelBrut = (ligne.depenseRetenue / 12) * poids;
+  
+  return mensuelBrut;
+};
+
+// Version avec arrondi pour affichage individuel
 export const calculAjustementNouvelleDepense = (
   ligne: LigneNouvelleDepense,
   loyerMensuelLogement: number,
@@ -286,31 +329,10 @@ export const calculAjustementNouvelleDepense = (
   soustotalNbLocaux: number,
   soustotalLoyerLocaux: number
 ): number => {
-  if (!ligne.logementConcerne || ligne.depenseRetenue <= 0) return 0;
-  
-  const loyerMoyenAutresLogements = 
-    soustotalNbLogements <= 1 
-      ? 0 
-      : (soustotalLoyerLogements - loyerMensuelLogement) / (soustotalNbLogements - 1);
-  
-  const loyerMoyenLocaux = 
-    soustotalNbLocaux === 0 
-      ? 0 
-      : soustotalLoyerLocaux / soustotalNbLocaux;
-  
-  const baseConcernee = 
-    loyerMensuelLogement 
-    + Math.max(0, ligne.nbLogements - 1) * loyerMoyenAutresLogements 
-    + ligne.nbLocauxNonResidentiels * loyerMoyenLocaux;
-  
-  if (baseConcernee === 0) return 0;
-  
-  const poidsLogement = loyerMensuelLogement / baseConcernee;
-  
-  // Nouvelle dépense: divisée par 12 mois (pas d'amortissement sur 20 ans)
-  const ajustementMensuel = (ligne.depenseRetenue / 12) * poidsLogement;
-  
-  return round2(ajustementMensuel);
+  return round2(calculAjustementNouvelleDepenseBrut(
+    ligne, loyerMensuelLogement, soustotalNbLogements,
+    soustotalLoyerLogements, soustotalNbLocaux, soustotalLoyerLocaux
+  ));
 };
 
 // Calcul ajustement pour une variation d'aide
@@ -423,10 +445,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   // Arrondi UNIQUE à la fin (règle TAL)
   const totalAjustementReparations = round2(totalAjustementReparationsBrut);
   
-  // Ajustements nouvelles dépenses
-  let totalAjustementNouvellesDepenses = 0;
+  // Ajustements nouvelles dépenses - somme des valeurs BRUTES puis arrondi unique (règle TAL)
+  let totalAjustementNouvellesDepensesBrut = 0;
   formData.nouvellesDepenses.forEach(ligne => {
-    const ajust = calculAjustementNouvelleDepense(
+    const ajustBrut = calculAjustementNouvelleDepenseBrut(
       ligne,
       formData.loyerMensuelActuel,
       sousTotaux.soustotalLogements.nombre,
@@ -434,9 +456,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
       sousTotaux.soustotalNonResidentiels.nombre,
       sousTotaux.soustotalNonResidentiels.loyer
     );
-    totalAjustementNouvellesDepenses += ajust;
+    totalAjustementNouvellesDepensesBrut += ajustBrut;
   });
-  totalAjustementNouvellesDepenses = round2(totalAjustementNouvellesDepenses);
+  // Arrondi UNIQUE à la fin (règle TAL)
+  const totalAjustementNouvellesDepenses = round2(totalAjustementNouvellesDepensesBrut);
   
   // Ajustements variations d'aide
   let totalAjustementVariationsAide = 0;
