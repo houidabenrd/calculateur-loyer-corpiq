@@ -394,8 +394,9 @@ export const calculAjustementVariationAide = (
   ));
 };
 
-// Calcul ajustement déneigement
-export const calculAjustementDeneigement = (
+// Calcul ajustement déneigement (version BRUTE sans arrondi)
+// Section 6 TAL : ajustement = (delta × poidsAnnuel) / 12
+export const calculAjustementDeneigementBrut = (
   frais2025: number,
   frais2024: number,
   loyerMensuel: number,
@@ -403,10 +404,26 @@ export const calculAjustementDeneigement = (
 ): number => {
   if (revenusImmeuble === 0) return 0;
   
-  const variation = frais2025 - frais2024;
-  const poidsLoyer = (loyerMensuel * 12) / revenusImmeuble;
+  // Delta = variation annuelle des frais
+  const delta = frais2025 - frais2024;
   
-  return round2((variation / 12) * poidsLoyer);
+  // Poids annuel = (loyer × 12) / revenus annuels totaux
+  const poidsAnnuel = (loyerMensuel * 12) / revenusImmeuble;
+  
+  // Ajustement mensuel brut = (delta × poidsAnnuel) / 12
+  const ajustementMensuelBrut = (delta * poidsAnnuel) / 12;
+  
+  return ajustementMensuelBrut;
+};
+
+// Version avec arrondi pour affichage
+export const calculAjustementDeneigement = (
+  frais2025: number,
+  frais2024: number,
+  loyerMensuel: number,
+  revenusImmeuble: number
+): number => {
+  return round2(calculAjustementDeneigementBrut(frais2025, frais2024, loyerMensuel, revenusImmeuble));
 };
 
 // Calcul complet de toutes les valeurs
@@ -504,29 +521,44 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   const totalSection4Brut = totalAjustementNouvellesDepensesBrut + totalAjustementVariationsAideBrut;
   const totalSection4 = round2(totalSection4Brut);
   
-  // Ajustement déneigement
-  const ajustementDeneigement = calculAjustementDeneigement(
+  // Ajustement déneigement (Section 6) - valeur BRUTE
+  const ajustementDeneigementBrut = calculAjustementDeneigementBrut(
     formData.deneigement.frais2025,
     formData.deneigement.frais2024,
     formData.loyerMensuelActuel,
     sousTotaux.revenusImmeuble
   );
+  // Version arrondie pour affichage
+  const ajustementDeneigement = round2(ajustementDeneigementBrut);
   
-  // Total des ajustements
-  const totalAjustements = round2(
-    ajustementBase + 
-    totalAjustementTaxesAssurances + 
-    totalAjustementReparations + 
-    totalSection4 + 
-    ajustementDeneigement
-  );
+  // ============================================
+  // RÉCAPITULATIF FINAL - Conforme TAL
+  // ============================================
   
-  // Nouveau loyer recommandé (arrondi à l'entier)
-  const nouveauLoyerRecommande = Math.round(formData.loyerMensuelActuel + totalAjustements);
+  // Total des ajustements = somme des BRUTS de toutes les sections
+  // Section 1: ajustement base (déjà arrondi car c'est un calcul simple)
+  // Section 2: taxes et assurances (brut)
+  // Section 3: réparations (brut)
+  // Section 4: nouvelles dépenses + variations aide (brut)
+  // Section 5: déneigement (brut)
+  const totalAjustementsBrut = 
+    ajustementBase + // Section 1 (simple, pas de sous-lignes)
+    (ajustementTaxesMunicipalesBrut + ajustementTaxesScolairesBrut + ajustementAssurancesBrut) + // Section 2 brut
+    totalAjustementReparationsBrut + // Section 3 brut
+    totalSection4Brut + // Section 4 brut (5-1 + 5-2)
+    ajustementDeneigementBrut; // Section 5 brut
   
-  // Pourcentage de variation
+  // Total affiché = arrondi UNIQUE à la fin
+  const totalAjustements = round2(totalAjustementsBrut);
+  
+  // Nouveau loyer recommandé = ROUND(loyerAvant + totalBrut, 0)
+  // IMPORTANT: utiliser totalBrut, pas totalAjustements arrondi
+  const nouveauLoyerRecommande = Math.round(formData.loyerMensuelActuel + totalAjustementsBrut);
+  
+  // Pourcentage de variation = (totalBrut / loyerAvant) × 100
+  // Arrondi à 1 décimale puis affiché avec 2 décimales (format TAL)
   const pourcentageVariation = formData.loyerMensuelActuel > 0
-    ? round2(((nouveauLoyerRecommande - formData.loyerMensuelActuel) / formData.loyerMensuelActuel) * 100)
+    ? Math.round((totalAjustementsBrut / formData.loyerMensuelActuel) * 1000) / 10 // Arrondi à 1 décimale
     : 0;
   
   return {
