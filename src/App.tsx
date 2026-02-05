@@ -201,6 +201,9 @@ function App() {
               <p className="text-blue-200">
                 © {new Date().getFullYear()} CORPIQ — {t.app.footerRights}
               </p>
+              <p className="text-blue-300 text-xs mt-1">
+                {t.app.footerContact}
+              </p>
               <a 
                 href="https://www.corpiq.com" 
                 target="_blank" 

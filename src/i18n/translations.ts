@@ -9,6 +9,7 @@ export interface Translations {
     autoSave: string;
     footer: string;
     footerRights: string;
+    footerContact: string;
   };
   
   // Steps
@@ -233,6 +234,7 @@ export const translations: Record<Language, Translations> = {
       autoSave: 'Auto-save',
       footer: `© ${new Date().getFullYear()} CORPIQ - Corporation des propriétaires immobiliers du Québec`,
       footerRights: 'All rights reserved',
+      footerContact: 'Contact CORPIQ for more information',
     },
     steps: {
       step1: {
@@ -439,6 +441,7 @@ export const translations: Record<Language, Translations> = {
       autoSave: 'Sauvegarde automatique',
       footer: `© ${new Date().getFullYear()} CORPIQ - Corporation des propriétaires immobiliers du Québec`,
       footerRights: 'Tous droits réservés',
+      footerContact: 'Contactez la CORPIQ pour plus d\'informations',
     },
     steps: {
       step1: {
