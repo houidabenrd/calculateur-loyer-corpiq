@@ -65,7 +65,7 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="https://www.corpiq.com/gx/corpiq-logo.png?v=5" 
+                src="/corpiq-logo.png" 
                 alt="CORPIQ Logo" 
                 className="h-10 w-auto"
               />
