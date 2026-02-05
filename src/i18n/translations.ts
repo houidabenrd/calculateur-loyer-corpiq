@@ -8,6 +8,7 @@ export interface Translations {
     loading: string;
     autoSave: string;
     footer: string;
+    footerRights: string;
   };
   
   // Steps
@@ -231,6 +232,7 @@ export const translations: Record<Language, Translations> = {
       loading: 'Loading...',
       autoSave: 'Auto-save',
       footer: `© ${new Date().getFullYear()} CORPIQ - Corporation des propriétaires immobiliers du Québec`,
+      footerRights: 'All rights reserved',
     },
     steps: {
       step1: {
@@ -436,6 +438,7 @@ export const translations: Record<Language, Translations> = {
       loading: 'Chargement...',
       autoSave: 'Sauvegarde automatique',
       footer: `© ${new Date().getFullYear()} CORPIQ - Corporation des propriétaires immobiliers du Québec`,
+      footerRights: 'Tous droits réservés',
     },
     steps: {
       step1: {

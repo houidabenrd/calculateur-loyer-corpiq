@@ -183,11 +183,34 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-100 border-t border-gray-200 mt-12">
-        <div className="max-w-5xl mx-auto px-4 py-6 text-center text-gray-600 text-sm">
-          <p>
-            {t.app.footer}
-          </p>
+      <footer className="bg-corpiq-blue text-white mt-12">
+        <div className="max-w-5xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/corpiq-logo.png" 
+                alt="CORPIQ Logo" 
+                className="h-8 w-auto opacity-80"
+              />
+              <div className="text-sm">
+                <p className="font-semibold">CORPIQ</p>
+                <p className="text-blue-200 text-xs">Corporation des propriétaires immobiliers du Québec</p>
+              </div>
+            </div>
+            <div className="text-center md:text-right text-sm">
+              <p className="text-blue-200">
+                © {new Date().getFullYear()} CORPIQ — {t.app.footerRights}
+              </p>
+              <a 
+                href="https://www.corpiq.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-white transition-colors text-xs"
+              >
+                www.corpiq.com
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
