@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MapPin, Loader2, Search, X } from 'lucide-react';
 
-interface AddressSuggestion {
-  display_name: string;
-  lat: string;
-  lon: string;
-  place_id: number;
-  type: string;
+interface PhotonFeature {
+  geometry: { coordinates: [number, number] };
+  properties: {
+    osm_id: number;
+    name?: string;
+    housenumber?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+    type?: string;
+  };
+}
+
+interface PhotonResponse {
+  features: PhotonFeature[];
 }
 
 interface AddressAutocompleteProps {
@@ -24,7 +35,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   id,
 }) => {
   const [query, setQuery] = useState(value);
-  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<{ id: number; label: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -35,7 +46,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const abortRef = useRef<AbortController | null>(null);
 
-  // Sync external value changes (seulement quand le champ n'a pas le focus)
+  // Sync valeur externe (quand le champ n'a pas le focus)
   useEffect(() => {
     if (value !== query && !inputRef.current?.matches(':focus')) {
       setQuery(value);
@@ -44,7 +55,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // Fermer le dropdown quand on clique dehors
+  // Fermer le dropdown au clic dehors
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -55,15 +66,47 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Formater une adresse à partir des propriétés Photon
+  const formatAddress = (props: PhotonFeature['properties']): string => {
+    const parts: string[] = [];
+
+    // Numéro + rue
+    if (props.housenumber && props.street) {
+      parts.push(`${props.housenumber} ${props.street}`);
+    } else if (props.street) {
+      parts.push(props.street);
+    } else if (props.name) {
+      parts.push(props.name);
+    }
+
+    // Ville
+    if (props.city) {
+      parts.push(props.city);
+    }
+
+    // Province
+    if (props.state) {
+      parts.push(props.state);
+    }
+
+    // Code postal
+    if (props.postcode) {
+      parts.push(props.postcode);
+    }
+
+    return parts.join(', ') || props.name || '';
+  };
+
   const searchAddress = useCallback(async (searchQuery: string) => {
-    if (searchQuery.trim().length < 3) {
+    const trimmed = searchQuery.trim();
+    if (trimmed.length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
       setNoResults(false);
       return;
     }
 
-    // Annuler la requête précédente si elle est en cours
+    // Annuler requête précédente
     if (abortRef.current) {
       abortRef.current.abort();
     }
@@ -73,56 +116,57 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setNoResults(false);
 
     try {
-      // Ajouter "Québec" au query pour améliorer les résultats
-      const enhancedQuery = searchQuery.includes('QC') || searchQuery.includes('Québec') || searchQuery.includes('Quebec')
-        ? searchQuery
-        : `${searchQuery}, Québec`;
-
+      // API Photon (Komoot) - gratuite, pas de clé API, CORS OK
+      // bbox = zone Canada/Québec élargie pour capturer tout le Québec
       const params = new URLSearchParams({
-        format: 'json',
-        q: enhancedQuery,
-        countrycodes: 'ca',
+        q: trimmed,
+        lang: 'fr',
         limit: '6',
-        addressdetails: '1',
-        email: 'calculateur@corpiq.com',
+        lat: '46.8',    // Centre approx du Québec
+        lon: '-71.2',
+        bbox: '-79.8,44.9,-57.1,62.6',  // Bounding box Québec élargie
       });
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?${params.toString()}`,
-        {
-          signal: abortRef.current.signal,
-          headers: {
-            'Accept-Language': 'fr',
-          },
-        }
+        `https://photon.komoot.io/api/?${params.toString()}`,
+        { signal: abortRef.current.signal }
       );
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data: AddressSuggestion[] = await response.json();
+      const data: PhotonResponse = await response.json();
 
-      if (data.length > 0) {
-        setSuggestions(data);
-        setShowDropdown(true);
+      if (data.features && data.features.length > 0) {
+        const formatted = data.features.map(f => ({
+          id: f.properties.osm_id || Math.random(),
+          label: formatAddress(f.properties),
+        })).filter(s => s.label.length > 0);
+
+        // Supprimer les doublons
+        const unique = formatted.filter((item, index, arr) =>
+          arr.findIndex(i => i.label === item.label) === index
+        );
+
+        setSuggestions(unique);
+        setShowDropdown(unique.length > 0);
+        setNoResults(unique.length === 0);
         setHighlightedIndex(-1);
-        setNoResults(false);
       } else {
         setSuggestions([]);
         setShowDropdown(true);
         setNoResults(true);
       }
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        // Requête annulée, on ne fait rien
-        return;
-      }
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setSuggestions([]);
+      setShowDropdown(false);
       setNoResults(false);
     } finally {
       setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,10 +175,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setHasSelected(false);
     onChange(newValue);
 
-    // Debounce la recherche
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (newValue.trim().length >= 3) {
       debounceRef.current = setTimeout(() => {
@@ -147,27 +188,13 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     }
   };
 
-  const handleSelect = (suggestion: AddressSuggestion) => {
-    const cleanAddress = formatDisplayAddress(suggestion.display_name);
-    setQuery(cleanAddress);
-    onChange(cleanAddress);
+  const handleSelect = (label: string) => {
+    setQuery(label);
+    onChange(label);
     setShowDropdown(false);
     setHasSelected(true);
     setSuggestions([]);
     setNoResults(false);
-  };
-
-  const formatDisplayAddress = (displayName: string): string => {
-    const parts = displayName.split(', ');
-    const seen = new Set<string>();
-    const filtered = parts.filter(part => {
-      const normalized = part.toLowerCase().trim();
-      if (seen.has(normalized)) return false;
-      if (normalized === 'canada') return false;
-      seen.add(normalized);
-      return true;
-    });
-    return filtered.slice(0, 5).join(', ');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -177,28 +204,21 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setHighlightedIndex(prev =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
-          );
+          setHighlightedIndex(prev => prev < suggestions.length - 1 ? prev + 1 : 0);
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setHighlightedIndex(prev =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
-          );
+          setHighlightedIndex(prev => prev > 0 ? prev - 1 : suggestions.length - 1);
           break;
         case 'Enter':
           e.preventDefault();
           if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
-            handleSelect(suggestions[highlightedIndex]);
+            handleSelect(suggestions[highlightedIndex].label);
           }
           break;
       }
     }
-
-    if (e.key === 'Escape') {
-      setShowDropdown(false);
-    }
+    if (e.key === 'Escape') setShowDropdown(false);
   };
 
   const handleClear = () => {
@@ -214,7 +234,6 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   return (
     <div ref={containerRef} className="relative">
       <div className="relative">
-        {/* Icone de recherche / pin */}
         <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
           {isLoading ? (
             <Loader2 size={18} className="text-corpiq-blue animate-spin" />
@@ -233,16 +252,13 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            if (suggestions.length > 0) {
-              setShowDropdown(true);
-            }
+            if (suggestions.length > 0) setShowDropdown(true);
           }}
           placeholder={placeholder}
           autoComplete="off"
           className="input-field pl-10 pr-9 transition-shadow focus:shadow-md"
         />
 
-        {/* Bouton clear */}
         {query.length > 0 && (
           <button
             type="button"
@@ -254,16 +270,16 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         )}
       </div>
 
-      {/* Dropdown des suggestions */}
+      {/* Dropdown */}
       {showDropdown && (
         <div className="absolute z-50 mt-1 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden address-dropdown-enter">
           {suggestions.length > 0 ? (
-            <div className="py-1">
+            <div className="py-1 max-h-64 overflow-y-auto">
               {suggestions.map((suggestion, index) => (
                 <button
-                  key={suggestion.place_id}
+                  key={`${suggestion.id}-${index}`}
                   type="button"
-                  onClick={() => handleSelect(suggestion)}
+                  onClick={() => handleSelect(suggestion.label)}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={`w-full text-left px-4 py-3 flex items-start gap-3 transition-colors ${
                     index === highlightedIndex
@@ -277,21 +293,18 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                       index === highlightedIndex ? 'text-corpiq-blue' : 'text-gray-400'
                     }`}
                   />
-                  <span className="text-sm leading-snug">
-                    {formatDisplayAddress(suggestion.display_name)}
-                  </span>
+                  <span className="text-sm leading-snug">{suggestion.label}</span>
                 </button>
               ))}
             </div>
           ) : noResults ? (
             <div className="px-4 py-3 text-sm text-gray-500 text-center">
-              Aucune adresse trouvée. Essayez avec plus de détails.
+              Aucune adresse trouvée. Ajoutez plus de détails (ville, rue...).
             </div>
           ) : null}
-          <div className="px-4 py-1.5 bg-gray-50 border-t border-gray-100">
-            <span className="text-[10px] text-gray-400">
-              © OpenStreetMap
-            </span>
+          <div className="px-4 py-1.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-[10px] text-gray-400">© OpenStreetMap</span>
+            <span className="text-[10px] text-gray-400">Photon</span>
           </div>
         </div>
       )}
