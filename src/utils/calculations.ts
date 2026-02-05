@@ -3,6 +3,7 @@ import {
   FormData, 
   CalculatedValues, 
   TAUX_IPC_2026,
+  TAUX_SERVICES_AINES_2026,
   LigneReparation,
   LigneNouvelleDepense,
   LigneVariationAide 
@@ -67,9 +68,47 @@ export const calculSousTotaux = (formData: FormData) => {
   };
 };
 
-// Calcul de l'ajustement de base (IPC)
-export const calculAjustementBase = (loyerMensuel: number): number => {
-  return round2(loyerMensuel * TAUX_IPC_2026);
+// Calcul de l'ajustement de base (IPC) - avec gestion RPA
+// CAS 1: Immeuble normal → loyer × IPC
+// CAS 2: RPA → (services × 6.7%) + ((loyer - services) × IPC)
+export interface AjustementBaseResult {
+  ajustementBase: number;
+  ajustementServices: number;
+  ajustementSansServices: number;
+}
+
+export const calculAjustementBase = (
+  loyerMensuel: number,
+  isRPA: boolean = false,
+  partServicesPersonne: number = 0
+): AjustementBaseResult => {
+  if (!isRPA) {
+    // CAS 1: Immeuble normal (pas RPA)
+    // Formule: loyer × IPC (arrondi une seule fois à la fin)
+    const ajustement = loyerMensuel * TAUX_IPC_2026;
+    return {
+      ajustementBase: round2(ajustement),
+      ajustementServices: 0,
+      ajustementSansServices: round2(ajustement),
+    };
+  }
+  
+  // CAS 2: Résidence privée pour aînés (RPA)
+  // Bloc A: Services à la personne × 6.7%
+  const ajustementServices = partServicesPersonne * TAUX_SERVICES_AINES_2026;
+  
+  // Bloc B: (Loyer - Services) × IPC
+  const loyerSansServices = loyerMensuel - partServicesPersonne;
+  const ajustementSansServices = loyerSansServices * TAUX_IPC_2026;
+  
+  // Total: Pas d'arrondi intermédiaire, arrondi unique à la fin
+  const ajustementTotal = ajustementServices + ajustementSansServices;
+  
+  return {
+    ajustementBase: round2(ajustementTotal),
+    ajustementServices: round2(ajustementServices), // Pour affichage uniquement
+    ajustementSansServices: round2(ajustementSansServices), // Pour affichage uniquement
+  };
 };
 
 // Calcul ajustement taxes (municipales ou scolaires)
@@ -260,8 +299,13 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   // Sous-totaux
   const sousTotaux = calculSousTotaux(formData);
   
-  // Ajustement de base
-  const ajustementBase = calculAjustementBase(formData.loyerMensuelActuel);
+  // Ajustement de base (avec gestion RPA)
+  const ajustementBaseResult = calculAjustementBase(
+    formData.loyerMensuelActuel,
+    formData.isRPA,
+    formData.partServicesPersonne
+  );
+  const ajustementBase = ajustementBaseResult.ajustementBase;
   
   // Ajustements taxes et assurances
   const ajustementTaxesMunicipales = calculAjustementTaxes(
@@ -363,7 +407,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   
   return {
     tauxIPC: TAUX_IPC_2026,
+    tauxServicesAines: TAUX_SERVICES_AINES_2026,
     ajustementBase,
+    ajustementServices: ajustementBaseResult.ajustementServices,
+    ajustementSansServices: ajustementBaseResult.ajustementSansServices,
     ...sousTotaux,
     totalAjustementTaxesAssurances,
     totalAjustementReparations,

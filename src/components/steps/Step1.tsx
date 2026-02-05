@@ -111,31 +111,113 @@ export const Step1: React.FC<Step1Props> = ({
                 placeholder="Ex: 1 200,00 $"
               />
             </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Champ RPA: Part des services à la personne */}
+            {formData.isRPA && (
               <div>
                 <LabelWithTooltip 
-                  tooltip={t.step1.baseAdjustment.ipcVariationTooltip}
+                  htmlFor="partServices" 
+                  required
+                  tooltip="Partie du loyer mensuel liée aux services à la personne (repas, soins, etc.). Ce montant sera ajusté au taux de 6,7% au lieu du taux IPC."
                 >
-                  {t.step1.baseAdjustment.ipcVariation}
+                  Part des services à la personne
                 </LabelWithTooltip>
-                <div className="input-readonly text-right font-medium">
-                  {((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %
-                </div>
-              </div>
-              <div>
-                <LabelWithTooltip tooltip={t.step1.baseAdjustment.baseAdjustmentTooltip}>
-                  {t.step1.baseAdjustment.baseAdjustment}
-                </LabelWithTooltip>
-                <CalculatedField 
-                  value={calculatedValues?.ajustementBase || 0} 
-                  highlight={formData.loyerMensuelActuel > 0}
+                <CurrencyInput
+                  id="partServices"
+                  value={formData.partServicesPersonne}
+                  onChange={(value) => updateFormData({ partServicesPersonne: value })}
+                  placeholder="Ex: 500,00 $"
                 />
               </div>
-            </div>
+            )}
           </div>
+
+          {/* Affichage du calcul - CAS 1: Immeuble normal */}
+          {!formData.isRPA && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <LabelWithTooltip 
+                    tooltip={t.step1.baseAdjustment.ipcVariationTooltip}
+                  >
+                    {t.step1.baseAdjustment.ipcVariation}
+                  </LabelWithTooltip>
+                  <div className="input-readonly text-right font-medium">
+                    {((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %
+                  </div>
+                </div>
+                <div>
+                  <LabelWithTooltip tooltip={t.step1.baseAdjustment.baseAdjustmentTooltip}>
+                    {t.step1.baseAdjustment.baseAdjustment}
+                  </LabelWithTooltip>
+                  <CalculatedField 
+                    value={calculatedValues?.ajustementBase || 0} 
+                    highlight={formData.loyerMensuelActuel > 0}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Affichage du calcul - CAS 2: RPA (Résidence privée pour aînés) */}
+          {formData.isRPA && (
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-corpiq-blue mb-3">Calcul RPA (2 blocs)</h4>
+              
+              {/* Bloc A: Services à la personne */}
+              <div className="bg-white p-3 rounded mb-3">
+                <div className="text-sm font-medium text-gray-700 mb-2">
+                  Bloc A — Services à la personne (taux fixe 6,7%)
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-500">Montant:</span>
+                    <span className="ml-2 font-medium">{formatCurrency(formData.partServicesPersonne)}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Taux:</span>
+                    <span className="ml-2 font-medium">{((calculatedValues?.tauxServicesAines || 0) * 100).toFixed(1)} %</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Ajustement:</span>
+                    <span className="ml-2 font-medium text-corpiq-blue">{formatCurrency(calculatedValues?.ajustementServices || 0)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Bloc B: Loyer sans services */}
+              <div className="bg-white p-3 rounded mb-3">
+                <div className="text-sm font-medium text-gray-700 mb-2">
+                  Bloc B — Loyer sans services (taux IPC)
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <span className="text-gray-500">Montant:</span>
+                    <span className="ml-2 font-medium">{formatCurrency(formData.loyerMensuelActuel - formData.partServicesPersonne)}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Taux:</span>
+                    <span className="ml-2 font-medium">{((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Ajustement:</span>
+                    <span className="ml-2 font-medium text-corpiq-blue">{formatCurrency(calculatedValues?.ajustementSansServices || 0)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Total */}
+              <div className="border-t border-blue-200 pt-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold">Ajustement de base total (Bloc A + Bloc B)</span>
+                  <CalculatedField 
+                    value={calculatedValues?.ajustementBase || 0} 
+                    highlight={formData.loyerMensuelActuel > 0}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </SectionCard>
 

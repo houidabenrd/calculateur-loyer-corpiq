@@ -73,6 +73,7 @@ export interface FormData {
   adresse: string;
   isRPA: boolean;
   loyerMensuelActuel: number;
+  partServicesPersonne: number; // Partie du loyer liée aux services à la personne (RPA uniquement)
   
   // Section 1: Revenus de l'immeuble
   logements: RevenusLogements;
@@ -98,9 +99,13 @@ export interface FormData {
 export interface CalculatedValues {
   // Constantes 2026
   tauxIPC: number; // 0.031 = 3.1%
+  tauxServicesAines: number; // 0.067 = 6.7%
   
   // Valeurs calculées section 1
   ajustementBase: number;
+  // Détails pour RPA (résidence privée pour aînés)
+  ajustementServices: number; // Bloc A: part services × 6.7%
+  ajustementSansServices: number; // Bloc B: (loyer - part services) × IPC
   soustotalLogements: { nombre: number; loyer: number };
   soustotalNonResidentiels: { nombre: number; loyer: number };
   totalLoyersAnnuel: number;
@@ -142,11 +147,13 @@ export const STEPS: StepInfo[] = [
 ];
 
 export const TAUX_IPC_2026 = 0.031; // 3.1%
+export const TAUX_SERVICES_AINES_2026 = 0.067; // 6.7% - Taux fixe TAL 2026 pour services à la personne (RPA)
 
 export const initialFormData: FormData = {
   adresse: '',
   isRPA: false,
   loyerMensuelActuel: 0,
+  partServicesPersonne: 0,
   
   logements: {
     loues: { nombre: 0, loyerMensuel: 0 },
