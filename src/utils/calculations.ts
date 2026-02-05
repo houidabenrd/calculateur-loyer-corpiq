@@ -335,8 +335,10 @@ export const calculAjustementNouvelleDepense = (
   ));
 };
 
-// Calcul ajustement pour une variation d'aide
-export const calculAjustementVariationAide = (
+// Calcul ajustement pour une variation d'aide (version BRUTE sans arrondi)
+// Section 5-2 TAL : mensuel = -(variation / 12) × poids
+// Le signe est INVERSÉ car une DIMINUTION de l'aide entraîne une AUGMENTATION pour le locataire
+export const calculAjustementVariationAideBrut = (
   ligne: LigneVariationAide,
   loyerMensuelLogement: number,
   soustotalNbLogements: number,
@@ -346,30 +348,50 @@ export const calculAjustementVariationAide = (
 ): number => {
   if (!ligne.logementConcerne) return 0;
   
-  const loyerMoyenAutresLogements = 
+  // AA = Loyer moyen des autres logements résidentiels
+  const AA = 
     soustotalNbLogements <= 1 
       ? 0 
       : (soustotalLoyerLogements - loyerMensuelLogement) / (soustotalNbLogements - 1);
   
-  const loyerMoyenLocaux = 
+  // AB = Loyer moyen des locaux non résidentiels
+  const AB = 
     soustotalNbLocaux === 0 
       ? 0 
       : soustotalLoyerLocaux / soustotalNbLocaux;
   
+  // Base concernée = loyer + (nbRes-1)×AA + nbNonRes×AB
   const baseConcernee = 
     loyerMensuelLogement 
-    + Math.max(0, ligne.nbLogements - 1) * loyerMoyenAutresLogements 
-    + ligne.nbLocauxNonResidentiels * loyerMoyenLocaux;
+    + Math.max(0, ligne.nbLogements - 1) * AA 
+    + ligne.nbLocauxNonResidentiels * AB;
   
   if (baseConcernee === 0) return 0;
   
-  const poidsLogement = loyerMensuelLogement / baseConcernee;
+  // Poids = loyer / base
+  const poids = loyerMensuelLogement / baseConcernee;
   
-  // Le signe est INVERSÉ car une DIMINUTION de l'aide
-  // entraîne une AUGMENTATION pour le locataire
-  const ajustementMensuel = -(ligne.variation / 12) * poidsLogement;
+  // Variation = montant2025 - montant2024 (déjà calculé dans ligne.variation)
+  // Mensuel brut = -(variation / 12) × poids
+  // Signe inversé : diminution d'aide = augmentation pour locataire
+  const mensuelBrut = -(ligne.variation / 12) * poids;
   
-  return round2(ajustementMensuel);
+  return mensuelBrut;
+};
+
+// Version avec arrondi pour affichage individuel
+export const calculAjustementVariationAide = (
+  ligne: LigneVariationAide,
+  loyerMensuelLogement: number,
+  soustotalNbLogements: number,
+  soustotalLoyerLogements: number,
+  soustotalNbLocaux: number,
+  soustotalLoyerLocaux: number
+): number => {
+  return round2(calculAjustementVariationAideBrut(
+    ligne, loyerMensuelLogement, soustotalNbLogements,
+    soustotalLoyerLogements, soustotalNbLocaux, soustotalLoyerLocaux
+  ));
 };
 
 // Calcul ajustement déneigement
@@ -461,10 +483,10 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   // Arrondi UNIQUE à la fin (règle TAL)
   const totalAjustementNouvellesDepenses = round2(totalAjustementNouvellesDepensesBrut);
   
-  // Ajustements variations d'aide
-  let totalAjustementVariationsAide = 0;
+  // Ajustements variations d'aide (Section 5-2) - somme des valeurs BRUTES puis arrondi unique
+  let totalAjustementVariationsAideBrut = 0;
   formData.variationsAide.forEach(ligne => {
-    const ajust = calculAjustementVariationAide(
+    const ajustBrut = calculAjustementVariationAideBrut(
       ligne,
       formData.loyerMensuelActuel,
       sousTotaux.soustotalLogements.nombre,
@@ -472,11 +494,15 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
       sousTotaux.soustotalNonResidentiels.nombre,
       sousTotaux.soustotalNonResidentiels.loyer
     );
-    totalAjustementVariationsAide += ajust;
+    totalAjustementVariationsAideBrut += ajustBrut;
   });
-  totalAjustementVariationsAide = round2(totalAjustementVariationsAide);
+  // Arrondi UNIQUE à la fin (règle TAL)
+  const totalAjustementVariationsAide = round2(totalAjustementVariationsAideBrut);
   
-  const totalSection4 = round2(totalAjustementNouvellesDepenses + totalAjustementVariationsAide);
+  // Total Section 4 (= Section 5 TAL = 5-1 + 5-2)
+  // IMPORTANT: additionner les BRUTS puis arrondir une seule fois
+  const totalSection4Brut = totalAjustementNouvellesDepensesBrut + totalAjustementVariationsAideBrut;
+  const totalSection4 = round2(totalSection4Brut);
   
   // Ajustement déneigement
   const ajustementDeneigement = calculAjustementDeneigement(
