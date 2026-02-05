@@ -124,7 +124,7 @@ export const Step1: React.FC<Step1Props> = ({
                 </LabelWithTooltip>
                 <CurrencyInput
                   id="partServices"
-                  value={formData.partServicesPersonne}
+                  value={formData.partServicesPersonne || 0}
                   onChange={(value) => updateFormData({ partServicesPersonne: value })}
                   placeholder="Ex: 500,00 $"
                 />
@@ -172,7 +172,7 @@ export const Step1: React.FC<Step1Props> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
                     <span className="text-gray-500">Montant:</span>
-                    <span className="ml-2 font-medium">{formatCurrency(formData.partServicesPersonne)}</span>
+                    <span className="ml-2 font-medium">{formatCurrency(formData.partServicesPersonne || 0)}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Taux:</span>
@@ -193,7 +193,7 @@ export const Step1: React.FC<Step1Props> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
                     <span className="text-gray-500">Montant:</span>
-                    <span className="ml-2 font-medium">{formatCurrency(formData.loyerMensuelActuel - formData.partServicesPersonne)}</span>
+                    <span className="ml-2 font-medium">{formatCurrency(formData.loyerMensuelActuel - (formData.partServicesPersonne || 0))}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Taux:</span>

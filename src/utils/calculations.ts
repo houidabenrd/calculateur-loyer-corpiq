@@ -82,6 +82,9 @@ export const calculAjustementBase = (
   isRPA: boolean = false,
   partServicesPersonne: number = 0
 ): AjustementBaseResult => {
+  // Protection contre les valeurs undefined/NaN
+  const partServices = partServicesPersonne || 0;
+  
   if (!isRPA) {
     // CAS 1: Immeuble normal (pas RPA)
     // Formule: loyer × IPC (arrondi une seule fois à la fin)
@@ -95,10 +98,10 @@ export const calculAjustementBase = (
   
   // CAS 2: Résidence privée pour aînés (RPA)
   // Bloc A: Services à la personne × 6.7%
-  const ajustementServices = partServicesPersonne * TAUX_SERVICES_AINES_2026;
+  const ajustementServices = partServices * TAUX_SERVICES_AINES_2026;
   
   // Bloc B: (Loyer - Services) × IPC
-  const loyerSansServices = loyerMensuel - partServicesPersonne;
+  const loyerSansServices = loyerMensuel - partServices;
   const ajustementSansServices = loyerSansServices * TAUX_IPC_2026;
   
   // Total: Pas d'arrondi intermédiaire, arrondi unique à la fin

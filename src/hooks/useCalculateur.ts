@@ -14,12 +14,19 @@ export const useCalculateur = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Charger les données sauvegardées au démarrage
+  // Fusion avec initialFormData pour gérer les migrations de schéma (nouveaux champs)
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        setFormData(parsed);
+        // Fusionner avec les valeurs par défaut pour garantir tous les champs
+        setFormData({
+          ...initialFormData,
+          ...parsed,
+          // S'assurer que les nouveaux champs ont une valeur par défaut
+          partServicesPersonne: parsed.partServicesPersonne ?? initialFormData.partServicesPersonne,
+        });
       }
     } catch (e) {
       console.error('Erreur lors du chargement des données:', e);
