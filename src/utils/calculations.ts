@@ -563,16 +563,15 @@ export const calculerToutesLesValeurs = (formData: FormData): CalculatedValues =
   // Total affiché = ROUND_HALF_UP(totalBrut, 2)
   const totalAjustements = roundHalfUp(totalAjustementsBrut, 2);
   
-  // Nouveau loyer recommandé = ROUND_HALF_UP(loyerAvant + totalBrut, 0)
-  // IMPORTANT: utiliser totalBrut, pas totalAjustements arrondi
+  // Nouveau loyer recommandé = ROUND(loyerAvant + totalAjustements, 0)
+  // Arrondi au dollar le plus proche (0 décimale) — conforme TAL
   const nouveauLoyerRecommande = roundHalfUp(formData.loyerMensuelActuel + totalAjustementsBrut, 0);
   
   // Pourcentage de variation conforme TAL :
-  // pctVariation = (totalAdjBrut / loyerAvant) * 100
-  // pctAffiche = FORMAT_2_DECIMALS( ROUND_HALF_UP(pctVariation, 1) )
-  // Arrondi à 1 décimale puis affiché avec 2 décimales (format TAL)
+  // Calculé sur le nouveau loyer ARRONDI (au $) vs le loyer avant augmentation
+  // pct_variation = ROUND( ((new_rent - base_rent) / base_rent) * 100 , 2 )
   const pourcentageVariation = formData.loyerMensuelActuel > 0
-    ? roundHalfUp((totalAjustementsBrut / formData.loyerMensuelActuel) * 100, 1)
+    ? roundHalfUp(((nouveauLoyerRecommande - formData.loyerMensuelActuel) / formData.loyerMensuelActuel) * 100, 2)
     : 0;
   
   return {
