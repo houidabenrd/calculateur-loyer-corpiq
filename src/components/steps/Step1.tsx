@@ -7,7 +7,8 @@ import {
   NumberInput, 
   Checkbox,
   LabelWithTooltip,
-  NavigationButtons 
+  NavigationButtons,
+  InfoTooltip
 } from '../ui';
 import { formatCurrency } from '../../utils/calculations';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -236,7 +237,10 @@ export const Step1: React.FC<Step1Props> = ({
                     {t.step1.buildingRevenue.dwellings}
                   </th>
                   <th colSpan={2} className="text-center py-2 text-corpiq-blue border-l border-gray-200">
-                    {t.step1.buildingRevenue.nonResidential}
+                    <div className="flex items-center justify-center gap-1">
+                      {t.step1.buildingRevenue.nonResidential}
+                      <InfoTooltip content={t.step1.buildingRevenue.nonResidentialTooltip} />
+                    </div>
                   </th>
                 </tr>
                 <tr className="border-b text-sm text-gray-600">
@@ -251,7 +255,10 @@ export const Step1: React.FC<Step1Props> = ({
                 {/* Loués */}
                 <tr className="border-b">
                   <td className="py-3">
-                    <div className="font-medium">{t.step1.buildingRevenue.rented}</div>
+                    <div className="font-medium flex items-center gap-1">
+                      {t.step1.buildingRevenue.rented}
+                      <InfoTooltip content={t.step1.buildingRevenue.rentedTooltip} />
+                    </div>
                     <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">
@@ -283,7 +290,10 @@ export const Step1: React.FC<Step1Props> = ({
                 {/* Inoccupés */}
                 <tr className="border-b">
                   <td className="py-3">
-                    <div className="font-medium">{t.step1.buildingRevenue.vacant}</div>
+                    <div className="font-medium flex items-center gap-1">
+                      {t.step1.buildingRevenue.vacant}
+                      <InfoTooltip content={t.step1.buildingRevenue.vacantTooltip} />
+                    </div>
                     <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">
@@ -315,7 +325,10 @@ export const Step1: React.FC<Step1Props> = ({
                 {/* Occupés par le locateur */}
                 <tr className="border-b">
                   <td className="py-3">
-                    <div className="font-medium">{t.step1.buildingRevenue.occupiedByOwner}</div>
+                    <div className="font-medium flex items-center gap-1">
+                      {t.step1.buildingRevenue.occupiedByOwner}
+                      <InfoTooltip content={t.step1.buildingRevenue.occupiedByOwnerTooltip} />
+                    </div>
                     <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">

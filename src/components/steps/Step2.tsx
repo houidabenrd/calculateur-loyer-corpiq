@@ -132,7 +132,10 @@ export const Step2: React.FC<Step2Props> = ({
         <div className="space-y-6">
           {/* Taxes municipales */}
           <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.step2.municipalTaxes}</h3>
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+              {t.step2.municipalTaxes}
+              <InfoTooltip content={t.step2.municipalTaxesTooltip} />
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <LabelWithTooltip htmlFor="taxeMuni2026">
@@ -165,7 +168,10 @@ export const Step2: React.FC<Step2Props> = ({
 
           {/* Taxes scolaires */}
           <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.step2.schoolTaxes}</h3>
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+              {t.step2.schoolTaxes}
+              <InfoTooltip content={t.step2.schoolTaxesTooltip} />
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <LabelWithTooltip htmlFor="taxeScol2526">
@@ -196,7 +202,10 @@ export const Step2: React.FC<Step2Props> = ({
 
           {/* Assurances */}
           <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4">{t.step2.insurance}</h3>
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+              {t.step2.insurance}
+              <InfoTooltip content={t.step2.insuranceTooltip} />
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <LabelWithTooltip htmlFor="assur2025">

@@ -1,32 +1,90 @@
 import React from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, X, Info } from 'lucide-react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
-// Composant Tooltip d'aide
+// Composant Tooltip d'aide - UX améliorée
 interface InfoTooltipProps {
   content: string;
 }
 
-export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => (
-  <Tooltip.Provider delayDuration={200}>
-    <Tooltip.Root>
-      <Tooltip.Trigger asChild>
-        <button type="button" className="ml-1 text-gray-400 hover:text-corpiq-blue transition-colors">
-          <HelpCircle size={16} />
-        </button>
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content
-          className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm max-w-xs z-50"
-          sideOffset={5}
+export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const isLongContent = content.length > 200;
+
+  // Contenu court : tooltip au survol (Radix)
+  if (!isLongContent) {
+    return (
+      <Tooltip.Provider delayDuration={200}>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <button
+              type="button"
+              className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-corpiq-blue hover:bg-blue-100 hover:shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corpiq-blue/30"
+            >
+              <HelpCircle size={14} />
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              className="tooltip-content bg-white text-gray-700 px-4 py-3 rounded-xl text-sm max-w-sm z-50 shadow-xl border border-gray-100 leading-relaxed"
+              sideOffset={5}
+            >
+              <div className="flex gap-2.5">
+                <Info size={16} className="text-corpiq-blue flex-shrink-0 mt-0.5" />
+                <span className="whitespace-pre-line">{content}</span>
+              </div>
+              <Tooltip.Arrow className="fill-white" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    );
+  }
+
+  // Contenu long : panneau modal au clic
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-corpiq-blue hover:bg-blue-100 hover:shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-corpiq-blue/30"
+      >
+        <HelpCircle size={14} />
+      </button>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={() => setIsOpen(false)}
         >
-          {content}
-          <Tooltip.Arrow className="fill-gray-900" />
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-  </Tooltip.Provider>
-);
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm info-overlay-enter" />
+          <div
+            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-hidden info-panel-enter"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-corpiq-blue/5 to-transparent">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-corpiq-blue/10 flex items-center justify-center">
+                  <Info size={20} className="text-corpiq-blue" />
+                </div>
+                <span className="font-semibold text-gray-800 text-base">Information</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+              >
+                <X size={18} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="p-5 overflow-y-auto max-h-[calc(80vh-4.5rem)] text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+              {content}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 // Composant Section Card
 interface SectionCardProps {

@@ -121,14 +121,14 @@ export const Step4: React.FC<Step4Props> = ({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <LabelWithTooltip>{t.step3.expense}</LabelWithTooltip>
+                      <LabelWithTooltip tooltip={t.step4.newExpenses.expenseTooltip}>{t.step3.expense}</LabelWithTooltip>
                       <CurrencyInput
                         value={ligne.depense}
                         onChange={(v) => updateNouvelleDepense(ligne.id, { depense: v })}
                       />
                     </div>
                     <div>
-                      <LabelWithTooltip>{t.step3.financialAid}</LabelWithTooltip>
+                      <LabelWithTooltip tooltip={t.step4.newExpenses.financialAidTooltip}>{t.step3.financialAid}</LabelWithTooltip>
                       <CurrencyInput
                         value={ligne.aideFinanciere}
                         onChange={(v) => updateNouvelleDepense(ligne.id, { aideFinanciere: v })}
@@ -178,8 +178,18 @@ export const Step4: React.FC<Step4Props> = ({
                 <thead>
                   <tr className="border-b-2 border-corpiq-blue text-left">
                     <th className="py-2 px-2">{t.step4.newExpenses.nature}</th>
-                    <th className="py-2 px-2 text-right">{t.step4.newExpenses.expense}</th>
-                    <th className="py-2 px-2 text-right">{t.step3.financialAid}</th>
+                    <th className="py-2 px-2 text-right">
+                      <span className="flex items-center justify-end gap-1">
+                        {t.step4.newExpenses.expense}
+                        <InfoTooltip content={t.step4.newExpenses.expenseTooltip} />
+                      </span>
+                    </th>
+                    <th className="py-2 px-2 text-right">
+                      <span className="flex items-center justify-end gap-1">
+                        {t.step3.financialAid}
+                        <InfoTooltip content={t.step4.newExpenses.financialAidTooltip} />
+                      </span>
+                    </th>
                     <th className="py-2 px-2 text-right">{t.step3.retainedExpense}</th>
                     <th className="py-2 px-2 text-center">{t.step3.nbDwellings}</th>
                     <th className="py-2 px-2 text-center">{t.step3.nbNonResidential}</th>

@@ -63,8 +63,12 @@ export interface Translations {
       number: string;
       monthlyRent: string;
       rented: string;
+      rentedTooltip: string;
       vacant: string;
+      vacantTooltip: string;
       occupiedByOwner: string;
+      occupiedByOwnerTooltip: string;
+      nonResidentialTooltip: string;
       subtotal: string;
       totalAnnualRent: string;
       totalAnnualRentTooltip: string;
@@ -80,6 +84,7 @@ export interface Translations {
     important: string;
     importantNote: string;
     municipalTaxes: string;
+    municipalTaxesTooltip: string;
     year2026: string;
     year2025: string;
     year2024: string;
@@ -89,7 +94,9 @@ export interface Translations {
     monthlyAdjustment: string;
     monthlyAdjustmentTooltip: string;
     schoolTaxes: string;
+    schoolTaxesTooltip: string;
     insurance: string;
+    insuranceTooltip: string;
     totalAdjustment: string;
     totalAdjustmentTooltip: string;
   };
@@ -135,8 +142,10 @@ export interface Translations {
       addExpense: string;
       addLine: string;
       expense: string;
+      expenseTooltip: string;
       nature: string;
       naturePlaceholder: string;
+      financialAidTooltip: string;
       subtotal: string;
     };
     aidVariation: {
@@ -287,13 +296,17 @@ export const translations: Record<Language, Translations> = {
         number: 'Number',
         monthlyRent: 'Monthly rents (total)',
         rented: 'Rented',
+        rentedTooltip: 'Enter the total amount of rents payable for the month of December 2025.',
         vacant: 'Vacant',
+        vacantTooltip: 'Enter the total amount of rents for vacant dwellings in December 2025. This amount must be estimated based on the rent typically charged for comparable dwellings or premises.',
         occupiedByOwner: 'Occupied by the lessor',
+        occupiedByOwnerTooltip: 'A unit occupied by the lessor\'s family, by an employee, or used for the operation of the building is classified under "Occupied by the lessor".\nEnter the total amount of rents for dwellings occupied by the lessor in December 2025, estimated based on the rent typically paid for comparable dwellings or premises.',
+        nonResidentialTooltip: 'These are premises used for commercial, professional, industrial, or artisanal purposes. If the building includes such premises, enter the total rents for December 2025, including, if applicable, an estimate of the normal rent for unrented premises.',
         subtotal: 'Subtotal',
         totalAnnualRent: 'Total rents on an annual basis',
         totalAnnualRentTooltip: '(Total dwelling rents + units) × 12 months',
         otherRevenue: 'Other revenue from the operation of the building',
-        otherRevenueTooltip: 'Parking, laundry, etc.',
+        otherRevenueTooltip: 'Enter the annual amount of revenue other than that regularly received from the tenants of your building, excluding revenue from the operation of a non-residential dwelling. This revenue may come from services billed on a per-use basis (laundry, electric vehicle charging stations, etc.) or from amounts received from non-tenants, for example, the rental of a parking space.',
       },
     },
     step2: {
@@ -302,6 +315,7 @@ export const translations: Record<Language, Translations> = {
       important: 'Important:',
       importantNote: 'Only the portion of the increase that exceeds inflation ({rate}%) is taken into account in the adjustment calculation. If your taxes or insurance decrease, the reduction is fully passed on.',
       municipalTaxes: 'Municipal taxes',
+      municipalTaxesTooltip: 'Enter the amount of municipal and school taxes billed for the building for each of the indicated years to obtain the variation between the two amounts.\n\nIf your municipal tax bills are not available at the time of calculation, please contact your municipality to check if it is possible to obtain the tax rate to estimate the amount of your taxes. Otherwise, you will need to wait until they are available for an exact calculation.\n\nPlease note that there will only be a positive adjustment related to taxes if the increase exceeds the applicable base percentage for the rent.',
       year2026: 'Year 2026',
       year2025: 'Year 2025',
       year2024: 'Year 2024',
@@ -311,13 +325,15 @@ export const translations: Record<Language, Translations> = {
       monthlyAdjustment: 'Monthly adjustment',
       monthlyAdjustmentTooltip: 'Monthly adjustment calculated according to the TAL formula',
       schoolTaxes: 'School taxes',
+      schoolTaxesTooltip: 'Enter the amount of municipal and school taxes billed for the building for each of the indicated years to obtain the variation between the two amounts.\n\nIf your municipal tax bills are not available at the time of calculation, please contact your municipality to check if it is possible to obtain the tax rate to estimate the amount of your taxes. Otherwise, you will need to wait until they are available for an exact calculation.\n\nPlease note that there will only be a positive adjustment related to taxes if the increase exceeds the applicable base percentage for the rent.',
       insurance: 'Insurance',
+      insuranceTooltip: 'For building insurance premiums (fire insurance and liability), enter the amounts billed for the policy in effect on December 31, 2025 and for the one in effect on December 31, 2024 to obtain the variation between the two amounts.\n\nTo obtain information regarding the fire insurance and liability portion of your insurance policy, please contact your insurance company. If you are unable to obtain this information, enter the total amounts on your invoices. In case of rent fixing, the clerk may at their discretion adjust the amounts under section 15 of the Regulation respecting the criteria for the fixing of rent.\n\nThe calculation takes into account the proportion of rent in the building\'s revenue.\n\nThe variation in taxes and insurance is already integrated into the Consumer Price Index used to establish the base percentage of the rent. The draft regulation therefore provides an adjustment to avoid counting this variation twice.\n\nThus, please note that there will only be a positive adjustment related to insurance if the increase exceeds the applicable base percentage for the rent.',
       totalAdjustment: 'Adjustment for taxes and insurance',
       totalAdjustmentTooltip: 'Sum of the three adjustments above',
     },
     step3: {
       title: 'Major repairs or improvements',
-      tooltip: 'Major repair expenses are amortized over 20 years and distributed among the concerned dwellings',
+      tooltip: 'Major repairs or improvements give rise to capital expenditures, which are not part of the recurring expenses you regularly assume for the building. These may include work to repair or modify the main structural elements of the building (e.g., roof, plumbing, heating system, insulation, windows, exterior cladding, foundation, French drain, electrical panel) or renovation work (e.g., replacement of cabinets, countertops, plumbing, ceramic, or flooring) in dwellings or common areas.\n\nAnnex I of the Regulation amending the Regulation respecting the criteria for the fixing of rent also provides a list of expenses related to major repairs and improvements.',
       howItWorks: 'How it works:',
       howItWorksNote: 'Expenses are divided by 20 years, then distributed proportionally among the concerned dwellings/units according to their rent. Only the share attributable to the dwelling for which you are calculating the increase is counted.',
       noRepairs: 'No major repair or improvement added.',
@@ -327,11 +343,11 @@ export const translations: Record<Language, Translations> = {
       nature: 'Nature of the expense',
       naturePlaceholder: 'Ex: Roof repair',
       expense: 'Expense ($)',
-      expenseTooltip: 'Total cost of the repair or improvement',
+      expenseTooltip: 'Enter all expenses incurred between January 1 and December 31, 2025.',
       financialAid: 'Financial aid',
-      financialAidTooltip: 'Subsidies or grants received for this expense',
+      financialAidTooltip: 'Enter the amount of any aid, received or to be received, granted in connection with the expense by a ministry or body of the Government of Quebec or the Government of Canada, by a municipality, or by a public utility.',
       thirdPartyCompensation: 'Third-party compensation',
-      thirdPartyCompensationTooltip: 'Amount received from insurance or other third parties',
+      thirdPartyCompensationTooltip: 'If compensation is paid or is to be paid by a third party in respect of the expense, please indicate the amount.',
       retainedExpense: 'Retained expense',
       reducedInterestLoan: 'Reduced interest loan amount',
       annualPayment: 'Annual payment',
@@ -346,20 +362,22 @@ export const translations: Record<Language, Translations> = {
     step4: {
       newExpenses: {
         title: 'New expenses arising from the implementation of a service or the addition of an accessory or dependency',
-        tooltip: 'New services offered to tenants (e.g., parking, storage, etc.)',
+        tooltip: 'In addition to capital expenditures, you may have to assume new expenses following the implementation of a service, an accessory, or a dependency. This is the case, for example, when the implementation of a service causes operating expenses that you did not previously have to assume, or when you need to pay staff to offer a new service to tenants. You must estimate the cost of these new expenses for a full year.',
         note: 'Note:',
         noteText: 'Unlike major repairs, new expenses are not amortized over 20 years. They are divided by 12 months and distributed according to the weight of the dwelling.',
         noExpenses: 'No new expense added.',
         addExpense: 'Add a new expense',
         addLine: 'Add a line',
         expense: 'Expense ($)',
+        expenseTooltip: 'Please enter the expense for a full year from January 1, 2025 to December 31, 2025.',
         nature: 'Nature of the expense (reduction or addition)',
         naturePlaceholder: 'Ex: Parking',
+        financialAidTooltip: 'Enter the amount of any aid, received or to be received, granted in connection with the expense by a ministry or body of the Government of Quebec or the Government of Canada, by a municipality, or by a public utility.',
         subtotal: 'Subtotal of new expenses',
       },
       aidVariation: {
         title: 'Variation or end of aid received for the implementation of a service or the addition of an accessory or dependency',
-        tooltip: 'If a government aid decreases or ceases, this loss can be passed on to the rent',
+        tooltip: 'If financial aid for expenses, other than capital expenditures, arising from the implementation of a service or the addition of an accessory or a dependency was paid to you beyond the 12 consecutive months preceding the reference period, please indicate the amount paid to you during the reference period and that paid to you during the previous period.',
         important: 'Important:',
         importantNote: 'A decrease in financial aid (amount 2025 < amount 2024) results in an increase in rent. The sign is automatically reversed in the calculation.',
         noVariations: 'No aid variation added.',
@@ -377,7 +395,7 @@ export const translations: Record<Language, Translations> = {
     step5: {
       snowRemoval: {
         title: 'Snow removal fees (mobile home parks)',
-        tooltip: 'This section only applies to mobile home parks',
+        tooltip: 'Only fill in this section if it is a mobile home park.',
         note: 'This section only applies to mobile home parks. If you are not in this case, leave these fields at zero.',
         noteText: '',
         fees2025: 'Fees 2025',
@@ -497,13 +515,17 @@ export const translations: Record<Language, Translations> = {
         number: 'Nombre',
         monthlyRent: 'Loyers mensuels (totaux)',
         rented: 'Loués',
+        rentedTooltip: 'Indiquez le montant total des loyers exigibles pour le mois de décembre 2025.',
         vacant: 'Inoccupés',
+        vacantTooltip: 'Indiquez le montant total des loyers des logements vacants en décembre 2025. Ce montant doit être estimé en fonction du loyer habituellement demandé pour des logements ou locaux comparables.',
         occupiedByOwner: 'Occupés par le locateur ou la locatrice',
+        occupiedByOwnerTooltip: 'Un local occupé par la famille du locateur, par un employé ou utilisé pour l\'exploitation de l\'immeuble est classé dans la catégorie « Occupés par le locateur ».\nIndiquez le montant total des loyers correspondant aux logements occupés par le locateur en décembre 2025, en l\'évaluant selon le loyer habituellement payé pour des logements ou locaux comparables.',
+        nonResidentialTooltip: 'Il s\'agit de locaux utilisés à des fins commerciales, professionnelles, industrielles ou artisanales. Si l\'immeuble en comprend, indiquez le total des loyers du mois de décembre 2025, en incluant, si applicable, une estimation du loyer normal pour les locaux non loués.',
         subtotal: 'Sous-total',
         totalAnnualRent: 'Total des loyers sur une base annuelle',
         totalAnnualRentTooltip: '(Total loyers logements + locaux) × 12 mois',
         otherRevenue: 'Autres revenus provenant de l\'exploitation de l\'immeuble',
-        otherRevenueTooltip: 'Stationnements, buanderie, etc.',
+        otherRevenueTooltip: 'Indiquez le montant annuel des revenus autres que ceux perçus de façon régulière auprès des locataires de votre immeuble, à l\'exclusion des revenus d\'exploitation d\'un logement non résidentiel. Ces revenus peuvent notamment provenir de services facturés à l\'utilisation (buanderie, bornes de recharge électrique, etc.) ou de sommes perçues auprès de personnes non locataires, par exemple la location d\'un espace de stationnement.',
       },
     },
     step2: {
@@ -512,6 +534,7 @@ export const translations: Record<Language, Translations> = {
       important: 'Important:',
       importantNote: 'Seule la portion de l\'augmentation qui dépasse l\'inflation ({rate}%) est prise en compte dans le calcul de l\'ajustement. Si vos taxes ou assurances diminuent, la réduction est entièrement répercutée.',
       municipalTaxes: 'Taxes municipales',
+      municipalTaxesTooltip: 'Inscrire le montant des taxes municipales et scolaires facturées pour l\'immeuble pour chacune des années indiquées pour obtenir la variation entre les deux montants.\n\nSi vos comptes de taxes municipales ne sont pas disponibles au moment du calcul, veuillez communiquer avec votre municipalité afin de vérifier s\'il est possible d\'obtenir le taux de taxation pour estimer le montant de vos taxes. À défaut, vous devrez attendre qu\'ils soient disponibles afin d\'avoir un calcul exact.\n\nPrenez note qu\'il y aura uniquement un ajustement positif en lien avec les taxes si l\'augmentation excède le pourcentage applicable de base pour le loyer.',
       year2026: 'Année 2026',
       year2025: 'Année 2025',
       year2024: 'Année 2024',
@@ -521,13 +544,15 @@ export const translations: Record<Language, Translations> = {
       monthlyAdjustment: 'Ajustement mensuel',
       monthlyAdjustmentTooltip: 'Ajustement mensuel calculé selon la formule du TAL',
       schoolTaxes: 'Taxes scolaires',
+      schoolTaxesTooltip: 'Inscrire le montant des taxes municipales et scolaires facturées pour l\'immeuble pour chacune des années indiquées pour obtenir la variation entre les deux montants.\n\nSi vos comptes de taxes municipales ne sont pas disponibles au moment du calcul, veuillez communiquer avec votre municipalité afin de vérifier s\'il est possible d\'obtenir le taux de taxation pour estimer le montant de vos taxes. À défaut, vous devrez attendre qu\'ils soient disponibles afin d\'avoir un calcul exact.\n\nPrenez note qu\'il y aura uniquement un ajustement positif en lien avec les taxes si l\'augmentation excède le pourcentage applicable de base pour le loyer.',
       insurance: 'Assurances',
+      insuranceTooltip: 'Dans le cas des primes d\'assurance de l\'immeuble (assurance-incendie et responsabilité), indiquez les montants facturés pour la police en vigueur au 31 décembre 2025 et pour celle en vigueur au 31 décembre 2024 pour obtenir la variation entre les deux montants.\n\nPour obtenir l\'information concernant la portion assurance-incendie et responsabilité de votre police d\'assurance, veuillez contacter votre compagnie d\'assurance. Si vous êtes dans l\'impossibilité d\'obtenir ces informations, mettez les montants totaux sur vos factures. En cas de fixation de loyer, le greffier pourra à sa discrétion ajuster les montants en vertu de l\'article 15 du Règlement sur les critères de fixation de loyers.\n\nLe calcul prend en considération la proportion du loyer dans les revenus de l\'immeuble.\n\nLa variation des taxes et des assurances est déjà intégrée à l\'Indice des prix à la consommation utilisé pour établir le pourcentage de base du loyer. Le projet de règlement prévoit donc un ajustement afin d\'éviter que cette variation soit prise en compte en double.\n\nAinsi, prenez note qu\'il y aura uniquement un ajustement positif en lien avec les assurances si l\'augmentation excède le pourcentage applicable de base pour le loyer.',
       totalAdjustment: 'Ajustement pour les taxes et les assurances',
       totalAdjustmentTooltip: 'Somme des trois ajustements ci-dessus',
     },
     step3: {
       title: 'Réparations ou améliorations majeures',
-      tooltip: 'Les dépenses de réparations majeures sont amorties sur 20 ans et réparties entre les logements concernés',
+      tooltip: 'Les réparations ou améliorations majeures donnent lieu à des dépenses d\'immobilisation, qui ne font pas partie des dépenses récurrentes que vous assumez régulièrement pour l\'immeuble. Il peut s\'agir de travaux visant à réparer ou modifier les principaux éléments de la structure de l\'immeuble (p. ex. : toit, tuyauterie, système de chauffage, isolation, fenestration, revêtement extérieur, fondation, drain français, panneau électrique) ou de travaux de rénovation (p. ex. : remplacement des armoires, comptoirs, de la plomberie, de la céramique ou du plancher) dans les logements ou les espaces communs.\n\nL\'annexe I du Règlement modifiant le Règlement sur les critères de fixation de loyer prévoit également une liste de dépenses rattachées aux réparations et améliorations majeures.\n\n« 1. Travaux de maintien de l\'intégrité physique du bâtiment :\n\n1° Structure et fondations :\na) Réparation ou renforcement des fondations relativement, entre autres, à des fissures ou à des affaissements;\nb) Réfection ou renforcement de la charpente relativement, entre autres, à des poutres, à des colonnes ou à des murs porteurs;\n\n2° Toiture et enveloppe extérieure :\na) Réfection de la toiture comprenant, entre autres, le remplacement du bardeau, de la membrane ou de l\'isolation de l\'entretoit;\nb) Réparation ou remplacement du revêtement extérieur;\nc) Réfection des balcons, des escaliers ou des garde-corps;\nd) Réparation des corniches, des solins ou des gouttières;\n\n3° Maçonnerie :\na) Rejointement des briques;\nb) Réparation des fissures et délamination;\n\n4° Menuiseries extérieures :\na) Remplacement ou réparation majeure des portes ou des fenêtres détériorées;\nb) Réparation majeure des cadres ou des seuils;\n\n5° Drainage et fondations :\na) Remplacement ou installation de drains français;\nb) Étanchéisation des fondations;\n\n6° Mise à niveau des systèmes de sécurité, entre autres des gicleurs, des détecteurs de fumée, des extincteurs ou des escaliers de secours.\n\n2. Travaux d\'amélioration ou de modernisation :\n\n1° Cuisine et salle de bain :\na) Rénovation majeure, entre autres le remplacement des armoires, des comptoirs, de la plomberie ou de la céramique;\nb) Mise aux normes de la plomberie;\n\n2° Revêtements intérieurs :\na) Réfection ou remplacement des planchers;\nb) Réfection ou peinture des murs ou des plafonds;\n\n3° Électricité :\na) Ajout de prises électriques ou d\'éclairage encastré;\nb) Remplacement ou ajout de panneaux électriques;\nc) Mise aux normes des installations électriques;\n\n4° Ajout ou amélioration de l\'insonorisation entre unités;\n\n5° Agréments modernes :\na) Installation de buanderies privées ou partagées;\nb) Ajout de rangements, entre autres des casiers au sous-sol, ou des cabanons;\nc) Réfection des espaces communs, notamment le hall d\'entrée ou les escaliers.\n\n3. Travaux à impact énergétique, efficacité énergétique et adaptation aux changements climatiques :\n\n1° Ajout d\'isolant dans les murs, la toiture ou les planchers;\n\n2° Remplacement ou amélioration du système de chauffage ou de climatisation;\n\n3° Énergie renouvelable :\na) Installation de panneaux solaires photovoltaïques ou thermiques;\nb) Installation de bornes de recharge de véhicules électriques;\n\n4° Adaptation aux changements climatiques :\na) Aménagements pour prévenir les inondations, entre autres un système de pompage ou des clapets antiretour;\nb) Végétalisation, entre autres l\'aménagement de toits verts ou la plantation d\'arbres dans le but de réduire les îlots de chaleur;\nc) Réfection des aires imperméabilisées, notamment le pavage. »',
       howItWorks: 'Comment ça fonctionne:',
       howItWorksNote: 'Les dépenses sont divisées par 20 ans, puis réparties proportionnellement entre les logements/locaux concernés selon leur loyer. Seule la part attribuable au logement pour lequel vous calculez l\'augmentation est comptée.',
       noRepairs: 'Aucune réparation ou amélioration majeure ajoutée.',
@@ -537,11 +562,11 @@ export const translations: Record<Language, Translations> = {
       nature: 'Nature de la dépense',
       naturePlaceholder: 'Ex: Réfection toiture',
       expense: 'Dépense ($)',
-      expenseTooltip: 'Coût total de la réparation ou de l\'amélioration',
+      expenseTooltip: 'Inscrivez toutes les dépenses engagées entre le 1er janvier et le 31 décembre 2025.',
       financialAid: 'Aide financière',
-      financialAidTooltip: 'Subventions ou aides reçues pour cette dépense',
+      financialAidTooltip: 'Indiquez le montant de toute aide, reçue ou à recevoir, accordée en lien avec la dépense par un ministère ou un organisme du gouvernement du Québec ou du gouvernement du Canada, par une municipalité ou par une entreprise d\'utilité publique.',
       thirdPartyCompensation: 'Indemnité versée par un tiers',
-      thirdPartyCompensationTooltip: 'Montant reçu d\'assurances ou d\'autres tiers',
+      thirdPartyCompensationTooltip: 'Si une indemnité est versée ou doit l\'être par un tiers à l\'égard de la dépense, veuillez en indiquer le montant.',
       retainedExpense: 'Dépense retenue',
       reducedInterestLoan: 'Montant du prêt à intérêt réduit',
       annualPayment: 'Versement annuel',
@@ -556,20 +581,22 @@ export const translations: Record<Language, Translations> = {
     step4: {
       newExpenses: {
         title: 'Nouvelles dépenses découlant de la mise en place d\'un service ou de l\'ajout d\'un accessoire ou d\'une dépendance',
-        tooltip: 'Nouveaux services offerts aux locataires (ex: stationnement, rangement, etc.)',
+        tooltip: 'En plus des dépenses d\'immobilisation, il est possible que vous ayez à assumer de nouvelles dépenses à la suite de la mise en place d\'un service, d\'un accessoire ou d\'une dépendance. C\'est le cas, par exemple, lorsque la mise en place d\'un service occasionne des dépenses de fonctionnement que vous n\'aviez pas à assumer précédemment, ou encore lorsque vous devez rémunérer du personnel pour offrir un nouveau service aux locataires. Vous devez estimer le coût de ces nouvelles dépenses pour une année complète.',
         note: 'Note:',
         noteText: 'Contrairement aux réparations majeures, les nouvelles dépenses ne sont pas amorties sur 20 ans. Elles sont divisées par 12 mois et réparties selon le poids du logement.',
         noExpenses: 'Aucune nouvelle dépense ajoutée.',
         addExpense: 'Ajouter une nouvelle dépense',
         addLine: 'Ajouter une ligne',
         expense: 'Dépense ($)',
+        expenseTooltip: 'Veuillez inscrire la dépense pour une année complète du 1er janvier 2025 au 31 décembre 2025.',
         nature: 'Nature de la dépense (réduction ou ajout)',
         naturePlaceholder: 'Ex: Stationnement',
+        financialAidTooltip: 'Indiquez le montant de toute aide, reçue ou à recevoir, accordée en lien avec la dépense par un ministère ou un organisme du gouvernement du Québec ou du gouvernement du Canada, par une municipalité ou par une entreprise d\'utilité publique.',
         subtotal: 'Sous-total des nouvelles dépenses',
       },
       aidVariation: {
         title: 'Variation ou fin d\'une aide reçue pour la mise en place d\'un service ou l\'ajout d\'un accessoire ou d\'une dépendance',
-        tooltip: 'Si une aide gouvernementale diminue ou cesse, cette perte peut être répercutée sur le loyer',
+        tooltip: 'Si une aide financière pour des dépenses, autre que des dépenses d\'immobilisation, découlant de la mise en place d\'un service ou l\'ajout d\'un accessoire ou d\'une dépendance vous a été versée au-delà de la période de 12 mois consécutifs qui précède la période de référence, veuillez indiquer le montant qui vous a été versé au cours de la période de référence et celui qui vous a été versé au cours de la période précédente.',
         important: 'Important:',
         importantNote: 'Une diminution de l\'aide financière (montant 2025 < montant 2024) entraîne une augmentation du loyer. Le signe est inversé automatiquement dans le calcul.',
         noVariations: 'Aucune variation d\'aide ajoutée.',
@@ -587,7 +614,7 @@ export const translations: Record<Language, Translations> = {
     step5: {
       snowRemoval: {
         title: 'Frais de déneigement (parc de maisons mobiles)',
-        tooltip: 'Cette section ne s\'applique qu\'aux parcs de maisons mobiles',
+        tooltip: 'Ne remplissez cette section que s\'il s\'agit d\'un parc de maisons mobiles.',
         note: 'Cette section s\'applique uniquement aux parcs de maisons mobiles. Si vous n\'êtes pas dans ce cas, laissez ces champs à zéro.',
         noteText: '',
         fees2025: 'Frais 2025',
