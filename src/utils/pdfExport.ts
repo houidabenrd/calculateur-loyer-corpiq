@@ -358,9 +358,9 @@ export const generatePDF = async (
   addSubtotalRow(t.step3.totalAdjustment, formatCurrency(calculatedValues.totalAjustementReparations));
   y += 4;
 
-  // ========== SECTION 4a : NOUVELLES DÉPENSES ==========
+  // ========== SECTION 4 : NOUVELLES DÉPENSES ==========
   // Titre potentiellement long - utiliser splitTextToSize
-  addSectionTitle('4a', language === 'fr'
+  addSectionTitle('4', language === 'fr'
     ? 'Nouvelles dépenses'
     : 'New expenses');
   y += 2;
@@ -403,8 +403,8 @@ export const generatePDF = async (
   addSubtotalRow(t.step4.newExpenses.subtotal, formatCurrency(calculatedValues.totalAjustementNouvellesDepenses));
   y += 4;
 
-  // ========== SECTION 4b : VARIATIONS D'AIDE ==========
-  addSectionTitle('4b', language === 'fr'
+  // ========== VARIATIONS D'AIDE ==========
+  addSectionTitle('', language === 'fr'
     ? 'Variation ou fin d\'une aide financière'
     : 'Variation or end of financial aid');
   y += 2;
@@ -476,8 +476,7 @@ export const generatePDF = async (
     [`1. ${t.step5.summary.baseAdjustment.replace('{rate}', (calculatedValues.tauxIPC * 100).toFixed(1))}`, formatCurrency(calculatedValues.ajustementBase)],
     [`2. ${t.step5.summary.taxesAndInsurance}`, formatCurrency(calculatedValues.totalAjustementTaxesAssurances)],
     [`3. ${t.step5.summary.majorRepairs}`, formatCurrency(calculatedValues.totalAjustementReparations)],
-    [`4a. ${t.step5.summary.newExpenses}`, formatCurrency(calculatedValues.totalAjustementNouvellesDepenses)],
-    [`4b. ${t.step5.summary.aidVariations}`, formatCurrency(calculatedValues.totalAjustementVariationsAide)],
+    [`4. ${t.step5.summary.newExpenses}`, formatCurrency(calculatedValues.totalSection4)],
     [`5. ${t.step5.summary.snowRemoval}`, formatCurrency(calculatedValues.ajustementDeneigement)],
   ];
 
