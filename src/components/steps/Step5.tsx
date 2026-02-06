@@ -7,7 +7,7 @@ import {
   LabelWithTooltip,
   NavigationButtons,
 } from '../ui';
-import { Download, RotateCcw, Calculator, TrendingUp, Home, AlertTriangle, Sparkles, FileText } from 'lucide-react';
+import { Download, RotateCcw, Calculator, TrendingUp, Home, AlertTriangle, Sparkles } from 'lucide-react';
 import { formatCurrency } from '../../utils/calculations';
 import { useLanguage } from '../../i18n/LanguageContext';
 

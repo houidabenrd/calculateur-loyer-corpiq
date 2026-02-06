@@ -4,7 +4,7 @@ import { STEPS } from './types';
 import { StepIndicator } from './components/ui';
 import { Step1, Step2, Step3, Step4, Step5 } from './components/steps';
 import { generatePDF } from './utils/pdfExport';
-import { ExternalLink, Languages, Building2, CloudOff } from 'lucide-react';
+import { ExternalLink, Languages, Building2 } from 'lucide-react';
 import { useLanguage } from './i18n/LanguageContext';
 
 function App() {
