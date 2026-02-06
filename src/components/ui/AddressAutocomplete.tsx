@@ -43,7 +43,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const [noResults, setNoResults] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   // Sync valeur externe (quand le champ n'a pas le focus)
