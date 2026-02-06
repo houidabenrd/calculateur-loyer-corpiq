@@ -89,11 +89,77 @@ export const SectionCard: React.FC<SectionCardProps> = ({ title, badge, children
         </span>
       )}
       <span className="text-sm font-bold tracking-wide flex-1">{title}</span>
-      {tooltip && <InfoTooltip content={tooltip} />}
+      {tooltip && <HeaderTooltip content={tooltip} />}
     </div>
     <div className="section-content">{children}</div>
   </div>
 );
+
+// Tooltip spécial pour les headers sombres (bouton blanc visible sur fond bleu)
+const HeaderTooltip: React.FC<{ content: string }> = ({ content }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const isLongContent = content.length > 200;
+
+  if (!isLongContent) {
+    return (
+      <Tooltip.Provider delayDuration={150}>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <button type="button"
+              className="ml-1 inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-all duration-200 focus:outline-none hover:scale-110 flex-shrink-0">
+              <HelpCircle size={13} strokeWidth={2.5} />
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              className="tooltip-content bg-white text-gray-700 px-4 py-3 rounded-xl text-sm max-w-sm z-[100] leading-relaxed border border-gray-100"
+              style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08)' }}
+              sideOffset={8}>
+              <div className="flex gap-2.5">
+                <Info size={15} className="text-corpiq-blue flex-shrink-0 mt-0.5" />
+                <span className="whitespace-pre-line text-[13px]">{content}</span>
+              </div>
+              <Tooltip.Arrow className="fill-white" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    );
+  }
+
+  return (
+    <>
+      <button type="button" onClick={() => setIsOpen(true)}
+        className="ml-1 inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-white/90 hover:bg-white/30 transition-all duration-200 focus:outline-none hover:scale-110 flex-shrink-0">
+        <HelpCircle size={13} strokeWidth={2.5} />
+      </button>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setIsOpen(false)}>
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm info-overlay-enter" />
+          <div className="relative bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-hidden info-panel-enter"
+            style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-corpiq-blue/10 flex items-center justify-center">
+                  <Info size={16} className="text-corpiq-blue" />
+                </div>
+                <span className="font-bold text-gray-900 text-sm">Information</span>
+              </div>
+              <button type="button" onClick={() => setIsOpen(false)}
+                className="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="p-5 overflow-y-auto max-h-[calc(80vh-4rem)] text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+              {content}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
 
 // ─── CurrencyInput ───────────────────────────────────────────
 interface CurrencyInputProps {
@@ -226,57 +292,68 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
   <div className="mb-8">
     {/* Desktop */}
     <div className="hidden sm:block">
-      <div className="flex items-center justify-between">
-        {steps.map((step, index) => {
-          const accessible = canAccessStep ? canAccessStep(step.id) : true;
-          const clickable = onStepClick && accessible;
-          const done = step.id < currentStep;
-          const current = step.id === currentStep;
+      <div className="bg-white rounded-2xl border border-gray-200/80 p-4 sm:p-5" style={{boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03)'}}>
+        <div className="flex items-center">
+          {steps.map((step, index) => {
+            const accessible = canAccessStep ? canAccessStep(step.id) : true;
+            const clickable = onStepClick && accessible;
+            const done = step.id < currentStep;
+            const current = step.id === currentStep;
 
-          return (
-            <React.Fragment key={step.id}>
-              <button type="button"
-                onClick={() => clickable && onStepClick(step.id)}
-                disabled={!clickable}
-                className={`flex flex-col items-center transition-all duration-300 min-w-0 ${clickable ? 'cursor-pointer group' : 'cursor-not-allowed'}`}
-                title={!accessible ? disabledMessage : step.title}>
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs transition-all duration-300 ${
-                  done ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
-                  : current ? 'bg-corpiq-blue text-white shadow-md shadow-corpiq-blue/25 pulse-ring scale-110'
-                  : accessible ? 'bg-white text-gray-400 border-2 border-gray-200 group-hover:border-corpiq-blue/30 group-hover:text-corpiq-blue group-hover:scale-105'
-                  : 'bg-gray-100 text-gray-300 border border-gray-200'
-                }`}>
-                  {done ? <Check size={15} strokeWidth={3} /> : step.id}
-                </div>
-                <span className={`text-[10px] mt-2 text-center font-semibold max-w-[72px] leading-tight hidden lg:block transition-colors ${
-                  current ? 'text-corpiq-blue' : done ? 'text-emerald-600' : accessible ? 'text-gray-400' : 'text-gray-300'
-                }`}>{step.title}</span>
-              </button>
-              {index < steps.length - 1 && (
-                <div className="flex-1 mx-1.5 lg:mx-2.5 h-px bg-gray-200 relative">
-                  <div className={`absolute inset-y-0 left-0 bg-emerald-500 transition-all duration-700 ease-out rounded-full ${done ? 'w-full' : 'w-0'}`} style={{ height: '2px', top: '-0.5px' }} />
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
+            return (
+              <React.Fragment key={step.id}>
+                <button type="button"
+                  onClick={() => clickable && onStepClick(step.id)}
+                  disabled={!clickable}
+                  className={`flex items-center gap-2.5 transition-all duration-300 min-w-0 flex-shrink-0 ${clickable ? 'cursor-pointer group' : 'cursor-not-allowed'}`}
+                  title={!accessible ? disabledMessage : step.title}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-sm transition-all duration-300 flex-shrink-0 ${
+                    done ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    : current ? 'bg-corpiq-blue text-white shadow-lg shadow-corpiq-blue/25 scale-105'
+                    : accessible ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 group-hover:border-corpiq-blue/30 group-hover:text-corpiq-blue group-hover:bg-corpiq-blue-50/30'
+                    : 'bg-gray-50 text-gray-300 border border-gray-200'
+                  }`}>
+                    {done ? <Check size={18} strokeWidth={3} /> : step.id}
+                  </div>
+                  <div className="hidden lg:block min-w-0">
+                    <div className={`text-[11px] font-bold leading-tight truncate transition-colors ${
+                      current ? 'text-corpiq-blue' : done ? 'text-emerald-700' : accessible ? 'text-gray-500 group-hover:text-gray-700' : 'text-gray-300'
+                    }`}>{step.title}</div>
+                  </div>
+                </button>
+                {index < steps.length - 1 && (
+                  <div className="flex-1 mx-2 lg:mx-3 h-0.5 rounded-full bg-gray-100 relative min-w-[16px]">
+                    <div className={`absolute inset-0 bg-emerald-500 rounded-full transition-all duration-700 ease-out ${done ? 'w-full' : 'w-0'}`} />
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
     </div>
 
     {/* Mobile */}
     <div className="sm:hidden">
-      <div className="flex items-center justify-center gap-1.5 mb-2">
-        {steps.map((step) => (
-          <button key={step.id} type="button"
-            onClick={() => onStepClick && canAccessStep?.(step.id) && onStepClick(step.id)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              step.id === currentStep ? 'w-8 bg-corpiq-blue' : step.id < currentStep ? 'w-4 bg-emerald-500' : 'w-1.5 bg-gray-300'
-            }`} />
-        ))}
+      <div className="bg-white rounded-xl border border-gray-200/80 p-3" style={{boxShadow: '0 1px 3px rgba(0,0,0,0.04)'}}>
+        <div className="flex items-center justify-between gap-1 mb-2">
+          {steps.map((step) => {
+            const done = step.id < currentStep;
+            const current = step.id === currentStep;
+            return (
+              <button key={step.id} type="button"
+                onClick={() => onStepClick && canAccessStep?.(step.id) && onStepClick(step.id)}
+                className={`flex-1 h-2 rounded-full transition-all duration-300 ${
+                  current ? 'bg-corpiq-blue' : done ? 'bg-emerald-500' : 'bg-gray-200'
+                }`} />
+            );
+          })}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-corpiq-blue">{currentStep}/{steps.length}</span>
+          <span className="text-xs font-semibold text-gray-700">{steps[currentStep - 1]?.title}</span>
+        </div>
       </div>
-      <p className="text-center text-xs font-medium text-gray-500">
-        {currentStep}/{steps.length} — {steps[currentStep - 1]?.title}
-      </p>
     </div>
   </div>
 );

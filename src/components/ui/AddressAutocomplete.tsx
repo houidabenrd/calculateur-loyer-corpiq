@@ -272,9 +272,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className="absolute z-50 mt-1 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden address-dropdown-enter">
+        <div className="absolute z-[60] mt-1 w-full bg-white rounded-xl border border-gray-200 address-dropdown-enter" style={{boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.06)'}}>
           {suggestions.length > 0 ? (
-            <div className="py-1 max-h-64 overflow-y-auto">
+            <div className="py-1 max-h-[280px] overflow-y-auto overscroll-contain">
               {suggestions.map((suggestion, index) => (
                 <button
                   key={`${suggestion.id}-${index}`}
