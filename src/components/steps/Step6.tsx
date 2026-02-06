@@ -52,7 +52,7 @@ export const Step6: React.FC<Step6Props> = ({
   return (
     <div>
       {/* Récapitulatif */}
-      <SectionCard title={t.step5.summary.title} badge={6}>
+      <SectionCard title={t.step5.summary.title}>
         <div className="space-y-2">
           {summaryRows.map((row) => (
             <div key={row.badge}
