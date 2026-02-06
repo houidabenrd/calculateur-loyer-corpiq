@@ -10,6 +10,35 @@ import {
 } from '../ui';
 import { useLanguage } from '../../i18n/LanguageContext';
 
+// TaxRow défini EN DEHORS du composant pour éviter le remontage à chaque rendu
+const TaxRow: React.FC<{
+  label: string; tooltip: string; value1: number; onChange1: (v: number) => void; label1: string;
+  value2: number; onChange2: (v: number) => void; label2: string; adjustment: number; id1: string; id2: string;
+  adjustmentLabel: string;
+}> = ({ label, tooltip, value1, onChange1, label1, value2, onChange2, label2, adjustment, id1, id2, adjustmentLabel }) => (
+  <div className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
+    <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
+      <div className="w-1 h-5 bg-corpiq-blue rounded-full" />
+      {label}
+      <InfoTooltip content={tooltip} />
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <LabelWithTooltip htmlFor={id1}>{label1}</LabelWithTooltip>
+        <CurrencyInput id={id1} value={value1} onChange={onChange1} />
+      </div>
+      <div>
+        <LabelWithTooltip htmlFor={id2}>{label2}</LabelWithTooltip>
+        <CurrencyInput id={id2} value={value2} onChange={onChange2} />
+      </div>
+      <div>
+        <LabelWithTooltip>{adjustmentLabel}</LabelWithTooltip>
+        <CalculatedField value={adjustment} />
+      </div>
+    </div>
+  </div>
+);
+
 interface Step2Props {
   formData: FormData;
   calculatedValues: CalculatedValues | null;
@@ -26,17 +55,18 @@ export const Step2: React.FC<Step2Props> = ({
   onPrevious,
 }) => {
   const { t } = useLanguage();
-  const updateTaxesMunicipales = (field: 'anneeCourante' | 'anneePrecedente', value: number) => {
+
+  const updateTaxesMunicipales = React.useCallback((field: 'anneeCourante' | 'anneePrecedente', value: number) => {
     updateFormData({ taxesMunicipales: { ...formData.taxesMunicipales, [field]: value } });
-  };
+  }, [formData.taxesMunicipales, updateFormData]);
 
-  const updateTaxesScolaires = (field: 'anneeCourante' | 'anneePrecedente', value: number) => {
+  const updateTaxesScolaires = React.useCallback((field: 'anneeCourante' | 'anneePrecedente', value: number) => {
     updateFormData({ taxesScolaires: { ...formData.taxesScolaires, [field]: value } });
-  };
+  }, [formData.taxesScolaires, updateFormData]);
 
-  const updateAssurances = (field: 'dec2025' | 'dec2024', value: number) => {
+  const updateAssurances = React.useCallback((field: 'dec2025' | 'dec2024', value: number) => {
     updateFormData({ assurances: { ...formData.assurances, [field]: value } });
-  };
+  }, [formData.assurances, updateFormData]);
 
   const ajustementTaxesMunicipales = React.useMemo(() => {
     if (!calculatedValues || calculatedValues.revenusImmeuble === 0) return 0;
@@ -75,33 +105,6 @@ export const Step2: React.FC<Step2Props> = ({
     return Math.round(((variation - seuilInflation) * poidsLoyer) / 12 * 100) / 100;
   }, [formData, calculatedValues]);
 
-  const TaxRow = ({ label, tooltip, value1, onChange1, label1, value2, onChange2, label2, adjustment, id1, id2 }: {
-    label: string; tooltip: string; value1: number; onChange1: (v: number) => void; label1: string;
-    value2: number; onChange2: (v: number) => void; label2: string; adjustment: number; id1: string; id2: string;
-  }) => (
-    <div className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
-      <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
-        <div className="w-1 h-5 bg-corpiq-blue rounded-full" />
-        {label}
-        <InfoTooltip content={tooltip} />
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <LabelWithTooltip htmlFor={id1}>{label1}</LabelWithTooltip>
-          <CurrencyInput id={id1} value={value1} onChange={onChange1} />
-        </div>
-        <div>
-          <LabelWithTooltip htmlFor={id2}>{label2}</LabelWithTooltip>
-          <CurrencyInput id={id2} value={value2} onChange={onChange2} />
-        </div>
-        <div>
-          <LabelWithTooltip>{t.step2.monthlyAdjustment}</LabelWithTooltip>
-          <CalculatedField value={adjustment} />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div>
       <SectionCard title={t.step2.title} badge={2}>
@@ -118,6 +121,7 @@ export const Step2: React.FC<Step2Props> = ({
             value1={formData.taxesMunicipales.anneeCourante} onChange1={(v) => updateTaxesMunicipales('anneeCourante', v)} label1={t.step2.year2026} id1="taxeMuni2026"
             value2={formData.taxesMunicipales.anneePrecedente} onChange2={(v) => updateTaxesMunicipales('anneePrecedente', v)} label2={t.step2.year2025} id2="taxeMuni2025"
             adjustment={ajustementTaxesMunicipales}
+            adjustmentLabel={t.step2.monthlyAdjustment}
           />
 
           <TaxRow
@@ -125,6 +129,7 @@ export const Step2: React.FC<Step2Props> = ({
             value1={formData.taxesScolaires.anneeCourante} onChange1={(v) => updateTaxesScolaires('anneeCourante', v)} label1={t.step2.year2025_2026} id1="taxeScol2526"
             value2={formData.taxesScolaires.anneePrecedente} onChange2={(v) => updateTaxesScolaires('anneePrecedente', v)} label2={t.step2.year2024_2025} id2="taxeScol2425"
             adjustment={ajustementTaxesScolaires}
+            adjustmentLabel={t.step2.monthlyAdjustment}
           />
 
           {/* Assurances */}
