@@ -347,7 +347,6 @@ export const Step3: React.FC<Step3Props> = ({
                 3
               </span>
               <span className="font-bold text-sm text-gray-800">{t.step3.totalAdjustment}</span>
-              <InfoTooltip content={t.step3.totalAdjustmentTooltip} />
             </div>
             <div className="w-36">
               <CalculatedField value={calculatedValues?.totalAjustementReparations || 0} highlight />

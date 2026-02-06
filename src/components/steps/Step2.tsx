@@ -95,7 +95,7 @@ export const Step2: React.FC<Step2Props> = ({
           <CurrencyInput id={id2} value={value2} onChange={onChange2} />
         </div>
         <div>
-          <LabelWithTooltip tooltip={t.step2.monthlyAdjustmentTooltip}>{t.step2.monthlyAdjustment}</LabelWithTooltip>
+          <LabelWithTooltip>{t.step2.monthlyAdjustment}</LabelWithTooltip>
           <CalculatedField value={adjustment} />
         </div>
       </div>
@@ -104,7 +104,7 @@ export const Step2: React.FC<Step2Props> = ({
 
   return (
     <div>
-      <SectionCard title={t.step2.title} badge={2} tooltip={t.step2.tooltip}>
+      <SectionCard title={t.step2.title} badge={2}>
         <div className="bg-blue-50/70 border border-blue-200/50 rounded-xl p-4 mb-5">
           <p className="text-sm text-blue-800 leading-relaxed">
             <strong className="font-bold">{t.step2.important}</strong>{' '}
@@ -163,7 +163,6 @@ export const Step2: React.FC<Step2Props> = ({
                   2
                 </span>
                 <span className="font-bold text-sm text-gray-800">{t.step2.totalAdjustment}</span>
-                <InfoTooltip content={t.step2.totalAdjustmentTooltip} />
               </div>
               <div className="w-36">
                 <CalculatedField value={calculatedValues?.totalAjustementTaxesAssurances || 0} highlight />

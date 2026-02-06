@@ -514,7 +514,6 @@ export const Step4: React.FC<Step4Props> = ({
               4
             </span>
             <span className="font-bold text-sm text-gray-800">{t.step4.totalSection4}</span>
-            <InfoTooltip content={t.step4.totalSection4Tooltip} />
           </div>
           <div className="w-36">
             <CalculatedField value={calculatedValues?.totalSection4 || 0} highlight />

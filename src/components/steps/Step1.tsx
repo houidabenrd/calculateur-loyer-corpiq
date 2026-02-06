@@ -57,7 +57,7 @@ export const Step1: React.FC<Step1Props> = ({
   return (
     <div>
       {/* Renseignements sur le logement */}
-      <SectionCard title={t.step1.housingInfo.title} tooltip={t.step1.housingInfo.tooltip}>
+      <SectionCard title={t.step1.housingInfo.title}>
         <div className="space-y-5">
           <div>
             <LabelWithTooltip htmlFor="adresse" required>
@@ -80,11 +80,11 @@ export const Step1: React.FC<Step1Props> = ({
       </SectionCard>
 
       {/* Ajustement de base */}
-      <SectionCard title={t.step1.baseAdjustment.title} badge={1} tooltip={t.step1.baseAdjustment.tooltip}>
+      <SectionCard title={t.step1.baseAdjustment.title} badge={1}>
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
             <div>
-              <LabelWithTooltip htmlFor="loyer" required tooltip={t.step1.baseAdjustment.currentRentTooltip}>
+              <LabelWithTooltip htmlFor="loyer" required>
                 {t.step1.baseAdjustment.currentRent}
               </LabelWithTooltip>
               <CurrencyInput
@@ -97,8 +97,7 @@ export const Step1: React.FC<Step1Props> = ({
             
             {formData.isRPA && (
               <div>
-                <LabelWithTooltip htmlFor="partServices" required
-                  tooltip="Partie du loyer mensuel liée aux services à la personne (repas, soins, etc.). Ce montant sera ajusté au taux de 6,7% au lieu du taux IPC.">
+                <LabelWithTooltip htmlFor="partServices" required>
                   Part des services à la personne
                 </LabelWithTooltip>
                 <CurrencyInput
@@ -116,7 +115,7 @@ export const Step1: React.FC<Step1Props> = ({
             <div className="bg-gray-50 p-5 rounded-xl border border-gray-200/80">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <LabelWithTooltip tooltip={t.step1.baseAdjustment.ipcVariationTooltip}>
+                  <LabelWithTooltip>
                     {t.step1.baseAdjustment.ipcVariation}
                   </LabelWithTooltip>
                   <div className="input-readonly text-right font-bold tabular-nums">
@@ -124,7 +123,7 @@ export const Step1: React.FC<Step1Props> = ({
                   </div>
                 </div>
                 <div>
-                  <LabelWithTooltip tooltip={t.step1.baseAdjustment.baseAdjustmentTooltip}>
+                  <LabelWithTooltip>
                     {t.step1.baseAdjustment.baseAdjustment}
                   </LabelWithTooltip>
                   <CalculatedField value={calculatedValues?.ajustementBase || 0} highlight={formData.loyerMensuelActuel > 0} />
@@ -190,7 +189,7 @@ export const Step1: React.FC<Step1Props> = ({
       </SectionCard>
 
       {/* Revenus de l'immeuble */}
-      <SectionCard title={t.step1.buildingRevenue.title} tooltip={t.step1.buildingRevenue.tooltip}>
+      <SectionCard title={t.step1.buildingRevenue.title}>
         <div className="space-y-5">
           <div className="overflow-x-auto -mx-1">
             <table className="w-full text-sm">
@@ -306,7 +305,7 @@ export const Step1: React.FC<Step1Props> = ({
           <div className="bg-gray-50 p-5 rounded-xl border border-gray-200/80 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <LabelWithTooltip tooltip={t.step1.buildingRevenue.totalAnnualRentTooltip}>
+                <LabelWithTooltip>
                   {t.step1.buildingRevenue.totalAnnualRent}
                 </LabelWithTooltip>
                 <CalculatedField value={calculatedValues?.totalLoyersAnnuel || 0} />
