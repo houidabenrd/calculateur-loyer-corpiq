@@ -53,16 +53,16 @@ export const Step3: React.FC<Step3Props> = ({
         badge={3}
         tooltip={t.step3.tooltip}
       >
-        <div className="bg-amber-50/60 border-2 border-amber-200/50 rounded-2xl p-5 mb-6">
+        <div className="bg-amber-50/70 border border-amber-200/50 rounded-xl p-4 mb-5">
           <p className="text-sm text-amber-800 leading-relaxed">
             <strong>{t.step3.howItWorks}</strong> {t.step3.howItWorksNote}
           </p>
         </div>
 
         {formData.reparations.length === 0 ? (
-          <div className="text-center py-10 text-gray-400">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <Wrench size={24} className="text-gray-300" />
+            <div className="text-center py-8 text-gray-400">
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <Wrench size={20} className="text-gray-300" />
             </div>
             <p className="mb-4 text-sm">{t.step3.noRepairs}</p>
             <button
@@ -79,9 +79,9 @@ export const Step3: React.FC<Step3Props> = ({
             {/* Mobile */}
             <div className="md:hidden space-y-4">
               {formData.reparations.map((ligne, index) => (
-                <div key={ligne.id} className="bg-gray-50/80 rounded-xl p-4 space-y-3 border border-gray-100">
+                <div key={ligne.id} className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-200/80">
                   <div className="flex justify-between items-start">
-                    <span className="font-semibold text-corpiq-blue text-sm">{t.step3.line} {index + 1}</span>
+                    <span className="font-bold text-corpiq-blue text-xs uppercase tracking-wider">{t.step3.line} {index + 1}</span>
                     <button
                       type="button"
                       onClick={() => removeReparation(ligne.id)}
@@ -105,14 +105,14 @@ export const Step3: React.FC<Step3Props> = ({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <LabelWithTooltip>{t.step3.expense}</LabelWithTooltip>
+                      <LabelWithTooltip tooltip={t.step3.expenseTooltip}>{t.step3.expense}</LabelWithTooltip>
                       <CurrencyInput
                         value={ligne.depense}
                         onChange={(v) => updateReparation(ligne.id, { depense: v })}
                       />
                     </div>
                     <div>
-                      <LabelWithTooltip>{t.step3.financialAid}</LabelWithTooltip>
+                      <LabelWithTooltip tooltip={t.step3.financialAidTooltip}>{t.step3.financialAid}</LabelWithTooltip>
                       <CurrencyInput
                         value={ligne.aideFinanciere}
                         onChange={(v) => updateReparation(ligne.id, { aideFinanciere: v })}
@@ -122,7 +122,7 @@ export const Step3: React.FC<Step3Props> = ({
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <LabelWithTooltip>{t.step3.thirdPartyCompensation}</LabelWithTooltip>
+                      <LabelWithTooltip tooltip={t.step3.thirdPartyCompensationTooltip}>{t.step3.thirdPartyCompensation}</LabelWithTooltip>
                       <CurrencyInput
                         value={ligne.indemniteTiers}
                         onChange={(v) => updateReparation(ligne.id, { indemniteTiers: v })}
@@ -339,20 +339,18 @@ export const Step3: React.FC<Step3Props> = ({
         )}
 
         {/* Total */}
-        <div className="bg-gray-50/80 p-5 rounded-2xl border-2 border-gray-100 mt-6">
+        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/80 mt-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="w-9 h-9 rounded-xl text-sm font-extrabold flex items-center justify-center text-white shadow-md" style={{background: 'linear-gradient(135deg, #530f32 0%, #6b1441 100%)'}}>
+            <div className="flex items-center gap-2.5">
+              <span className="w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center text-white"
+                style={{background: 'linear-gradient(135deg, #13315c, #1a4178)'}}>
                 3
               </span>
-              <span className="font-semibold text-sm">{t.step3.totalAdjustment}</span>
+              <span className="font-bold text-sm text-gray-800">{t.step3.totalAdjustment}</span>
               <InfoTooltip content={t.step3.totalAdjustmentTooltip} />
             </div>
-            <div className="w-40">
-              <CalculatedField 
-                value={calculatedValues?.totalAjustementReparations || 0} 
-                highlight
-              />
+            <div className="w-36">
+              <CalculatedField value={calculatedValues?.totalAjustementReparations || 0} highlight />
             </div>
           </div>
         </div>

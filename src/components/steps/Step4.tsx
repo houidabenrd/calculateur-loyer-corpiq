@@ -72,16 +72,16 @@ export const Step4: React.FC<Step4Props> = ({
         badge="4a"
         tooltip={t.step4.newExpenses.tooltip}
       >
-        <div className="bg-blue-50/60 border-2 border-blue-200/50 rounded-2xl p-5 mb-6">
+        <div className="bg-blue-50/70 border border-blue-200/50 rounded-xl p-4 mb-5">
           <p className="text-sm text-blue-800 leading-relaxed">
             <strong>{t.step4.newExpenses.note}</strong> {t.step4.newExpenses.noteText}
           </p>
         </div>
 
         {formData.nouvellesDepenses.length === 0 ? (
-          <div className="text-center py-10 text-gray-400">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <PackagePlus size={24} className="text-gray-300" />
+          <div className="text-center py-8 text-gray-400">
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <PackagePlus size={20} className="text-gray-300" />
             </div>
             <p className="mb-4 text-sm">{t.step4.newExpenses.noExpenses}</p>
             <button
@@ -299,16 +299,16 @@ export const Step4: React.FC<Step4Props> = ({
         badge="4b"
         tooltip={t.step4.aidVariation.tooltip}
       >
-        <div className="bg-red-50/60 border-2 border-red-200/50 rounded-2xl p-5 mb-6">
+        <div className="bg-red-50/70 border border-red-200/50 rounded-xl p-4 mb-5">
           <p className="text-sm text-red-800 leading-relaxed">
             <strong>{t.step4.aidVariation.important}</strong> {t.step4.aidVariation.importantNote}
           </p>
         </div>
 
         {formData.variationsAide.length === 0 ? (
-          <div className="text-center py-10 text-gray-400">
-            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-              <ArrowUpDown size={24} className="text-gray-300" />
+          <div className="text-center py-8 text-gray-400">
+            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <ArrowUpDown size={20} className="text-gray-300" />
             </div>
             <p className="mb-4 text-sm">{t.step4.aidVariation.noVariations}</p>
             <button
@@ -506,20 +506,18 @@ export const Step4: React.FC<Step4Props> = ({
       </SectionCard>
 
       {/* Total Section 4 */}
-      <div className="bg-gray-50/80 p-5 rounded-2xl border-2 border-gray-100 mb-8">
+      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/80 mb-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-xl text-sm font-extrabold flex items-center justify-center text-white shadow-md" style={{background: 'linear-gradient(135deg, #530f32 0%, #6b1441 100%)'}}>
+          <div className="flex items-center gap-2.5">
+            <span className="w-7 h-7 rounded-lg text-xs font-extrabold flex items-center justify-center text-white"
+              style={{background: 'linear-gradient(135deg, #13315c, #1a4178)'}}>
               4
             </span>
-            <span className="font-semibold text-sm">{t.step4.totalSection4}</span>
+            <span className="font-bold text-sm text-gray-800">{t.step4.totalSection4}</span>
             <InfoTooltip content={t.step4.totalSection4Tooltip} />
           </div>
-          <div className="w-40">
-            <CalculatedField 
-              value={calculatedValues?.totalSection4 || 0} 
-              highlight
-            />
+          <div className="w-36">
+            <CalculatedField value={calculatedValues?.totalSection4 || 0} highlight />
           </div>
         </div>
       </div>
