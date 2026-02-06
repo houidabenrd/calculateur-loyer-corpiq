@@ -204,12 +204,12 @@ export const Step4: React.FC<Step4Props> = ({
                 <tbody className="divide-y divide-gray-100">
                   {formData.nouvellesDepenses.map((ligne) => (
                     <tr key={ligne.id} className="group hover:bg-corpiq-light-blue/10 transition-colors">
-                      <td className="py-2 px-2">
+                      <td className="py-2 px-2 min-w-[200px]">
                         <input
                           type="text"
                           value={ligne.nature}
                           onChange={(e) => updateNouvelleDepense(ligne.id, { nature: e.target.value })}
-                          className="input-field text-sm"
+                          className="input-field text-sm w-full"
                           placeholder={t.step4.newExpenses.naturePlaceholder}
                         />
                       </td>
@@ -415,12 +415,12 @@ export const Step4: React.FC<Step4Props> = ({
                 <tbody className="divide-y divide-gray-100">
                   {formData.variationsAide.map((ligne) => (
                     <tr key={ligne.id} className="group hover:bg-corpiq-light-blue/10 transition-colors">
-                      <td className="py-2 px-2">
+                      <td className="py-2 px-2 min-w-[200px]">
                         <input
                           type="text"
                           value={ligne.nature}
                           onChange={(e) => updateVariationAide(ligne.id, { nature: e.target.value })}
-                          className="input-field text-sm"
+                          className="input-field text-sm w-full"
                           placeholder={t.step4.aidVariation.aidNature}
                         />
                       </td>
