@@ -62,7 +62,7 @@ export const Step1: React.FC<Step1Props> = ({
 
   return (
     <div>
-      {/* Section: Renseignements sur le logement */}
+      {/* Renseignements sur le logement */}
       <SectionCard 
         title={t.step1.housingInfo.title}
         tooltip={t.step1.housingInfo.tooltip}
@@ -88,7 +88,7 @@ export const Step1: React.FC<Step1Props> = ({
         </div>
       </SectionCard>
 
-      {/* Section: Ajustement de base */}
+      {/* Ajustement de base */}
       <SectionCard 
         title={t.step1.baseAdjustment.title}
         badge={1}
@@ -112,7 +112,6 @@ export const Step1: React.FC<Step1Props> = ({
               />
             </div>
             
-            {/* Champ RPA: Part des services à la personne */}
             {formData.isRPA && (
               <div>
                 <LabelWithTooltip 
@@ -132,17 +131,15 @@ export const Step1: React.FC<Step1Props> = ({
             )}
           </div>
 
-          {/* Affichage du calcul - CAS 1: Immeuble normal */}
+          {/* Immeuble normal */}
           {!formData.isRPA && (
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-50/80 p-5 rounded-xl border border-gray-100">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <LabelWithTooltip 
-                    tooltip={t.step1.baseAdjustment.ipcVariationTooltip}
-                  >
+                  <LabelWithTooltip tooltip={t.step1.baseAdjustment.ipcVariationTooltip}>
                     {t.step1.baseAdjustment.ipcVariation}
                   </LabelWithTooltip>
-                  <div className="input-readonly text-right font-medium">
+                  <div className="input-readonly text-right font-semibold tabular-nums">
                     {((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %
                   </div>
                 </div>
@@ -159,57 +156,54 @@ export const Step1: React.FC<Step1Props> = ({
             </div>
           )}
 
-          {/* Affichage du calcul - CAS 2: RPA (Résidence privée pour aînés) */}
+          {/* RPA */}
           {formData.isRPA && (
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h4 className="font-semibold text-corpiq-blue mb-3">Calcul RPA (2 blocs)</h4>
+            <div className="bg-blue-50/60 p-5 rounded-xl border border-blue-200/60">
+              <h4 className="font-semibold text-corpiq-blue mb-4 text-sm">Calcul RPA (2 blocs)</h4>
               
-              {/* Bloc A: Services à la personne */}
-              <div className="bg-white p-3 rounded mb-3">
-                <div className="text-sm font-medium text-gray-700 mb-2">
+              <div className="bg-white/80 p-4 rounded-xl mb-3 border border-blue-100/50">
+                <div className="text-sm font-medium text-gray-700 mb-3">
                   Bloc A — Services à la personne (taux fixe 6,7%)
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
                     <span className="text-gray-500">Montant:</span>
-                    <span className="ml-2 font-medium">{formatCurrency(formData.partServicesPersonne || 0)}</span>
+                    <span className="ml-2 font-semibold tabular-nums">{formatCurrency(formData.partServicesPersonne || 0)}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Taux:</span>
-                    <span className="ml-2 font-medium">{((calculatedValues?.tauxServicesAines || 0) * 100).toFixed(1)} %</span>
+                    <span className="ml-2 font-semibold tabular-nums">{((calculatedValues?.tauxServicesAines || 0) * 100).toFixed(1)} %</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Ajustement:</span>
-                    <span className="ml-2 font-medium text-corpiq-blue">{formatCurrency(calculatedValues?.ajustementServices || 0)}</span>
+                    <span className="ml-2 font-semibold text-corpiq-blue tabular-nums">{formatCurrency(calculatedValues?.ajustementServices || 0)}</span>
                   </div>
                 </div>
               </div>
               
-              {/* Bloc B: Loyer sans services */}
-              <div className="bg-white p-3 rounded mb-3">
-                <div className="text-sm font-medium text-gray-700 mb-2">
+              <div className="bg-white/80 p-4 rounded-xl mb-3 border border-blue-100/50">
+                <div className="text-sm font-medium text-gray-700 mb-3">
                   Bloc B — Loyer sans services (taux IPC)
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
                     <span className="text-gray-500">Montant:</span>
-                    <span className="ml-2 font-medium">{formatCurrency(formData.loyerMensuelActuel - (formData.partServicesPersonne || 0))}</span>
+                    <span className="ml-2 font-semibold tabular-nums">{formatCurrency(formData.loyerMensuelActuel - (formData.partServicesPersonne || 0))}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Taux:</span>
-                    <span className="ml-2 font-medium">{((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %</span>
+                    <span className="ml-2 font-semibold tabular-nums">{((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Ajustement:</span>
-                    <span className="ml-2 font-medium text-corpiq-blue">{formatCurrency(calculatedValues?.ajustementSansServices || 0)}</span>
+                    <span className="ml-2 font-semibold text-corpiq-blue tabular-nums">{formatCurrency(calculatedValues?.ajustementSansServices || 0)}</span>
                   </div>
                 </div>
               </div>
               
-              {/* Total */}
-              <div className="border-t border-blue-200 pt-3">
+              <div className="border-t border-blue-200/60 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold">Ajustement de base total (Bloc A + Bloc B)</span>
+                  <span className="font-semibold text-sm">Ajustement de base total (Bloc A + Bloc B)</span>
                   <CalculatedField 
                     value={calculatedValues?.ajustementBase || 0} 
                     highlight={formData.loyerMensuelActuel > 0}
@@ -221,44 +215,44 @@ export const Step1: React.FC<Step1Props> = ({
         </div>
       </SectionCard>
 
-      {/* Section: Revenus de l'immeuble */}
+      {/* Revenus de l'immeuble */}
       <SectionCard 
         title={t.step1.buildingRevenue.title}
         tooltip={t.step1.buildingRevenue.tooltip}
       >
         <div className="space-y-6">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-2">
             <table className="w-full">
               <thead>
-                <tr className="border-b-2 border-corpiq-blue">
-                  <th className="text-left py-2"></th>
-                  <th colSpan={2} className="text-center py-2 text-corpiq-blue">
+                <tr className="border-b-2 border-corpiq-blue/20">
+                  <th className="text-left py-2.5"></th>
+                  <th colSpan={2} className="text-center py-2.5 text-xs font-semibold text-corpiq-blue uppercase tracking-wider">
                     {t.step1.buildingRevenue.dwellings}
                   </th>
-                  <th colSpan={2} className="text-center py-2 text-corpiq-blue border-l border-gray-200">
+                  <th colSpan={2} className="text-center py-2.5 text-xs font-semibold text-corpiq-blue uppercase tracking-wider border-l border-gray-200">
                     <div className="flex items-center justify-center gap-1">
                       {t.step1.buildingRevenue.nonResidential}
                       <InfoTooltip content={t.step1.buildingRevenue.nonResidentialTooltip} />
                     </div>
                   </th>
                 </tr>
-                <tr className="border-b text-sm text-gray-600">
+                <tr className="border-b text-xs text-gray-500">
                   <th className="text-left py-2"></th>
-                  <th className="text-center py-2 w-24">{t.step1.buildingRevenue.number}</th>
-                  <th className="text-center py-2 w-36">{t.step1.buildingRevenue.monthlyRent}</th>
-                  <th className="text-center py-2 w-24 border-l border-gray-200">{t.step1.buildingRevenue.number}</th>
-                  <th className="text-center py-2 w-36">{t.step1.buildingRevenue.monthlyRent}</th>
+                  <th className="text-center py-2 w-24 font-medium">{t.step1.buildingRevenue.number}</th>
+                  <th className="text-center py-2 w-36 font-medium">{t.step1.buildingRevenue.monthlyRent}</th>
+                  <th className="text-center py-2 w-24 border-l border-gray-200 font-medium">{t.step1.buildingRevenue.number}</th>
+                  <th className="text-center py-2 w-36 font-medium">{t.step1.buildingRevenue.monthlyRent}</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-100">
                 {/* Loués */}
-                <tr className="border-b">
-                  <td className="py-3">
-                    <div className="font-medium flex items-center gap-1">
+                <tr className="group hover:bg-corpiq-light-blue/10 transition-colors">
+                  <td className="py-3.5">
+                    <div className="font-medium text-sm text-gray-800 flex items-center gap-1">
                       {t.step1.buildingRevenue.rented}
                       <InfoTooltip content={t.step1.buildingRevenue.rentedTooltip} />
                     </div>
-                    <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">
                     <NumberInput
@@ -272,7 +266,7 @@ export const Step1: React.FC<Step1Props> = ({
                       onChange={(v) => updateLogements('loues', 'loyerMensuel', v)}
                     />
                   </td>
-                  <td className="py-3 px-2 border-l border-gray-200">
+                  <td className="py-3 px-2 border-l border-gray-100">
                     <NumberInput
                       value={formData.locauxNonResidentiels.loues.nombre}
                       onChange={(v) => updateLocaux('loues', 'nombre', v)}
@@ -287,13 +281,13 @@ export const Step1: React.FC<Step1Props> = ({
                 </tr>
 
                 {/* Inoccupés */}
-                <tr className="border-b">
-                  <td className="py-3">
-                    <div className="font-medium flex items-center gap-1">
+                <tr className="group hover:bg-corpiq-light-blue/10 transition-colors">
+                  <td className="py-3.5">
+                    <div className="font-medium text-sm text-gray-800 flex items-center gap-1">
                       {t.step1.buildingRevenue.vacant}
                       <InfoTooltip content={t.step1.buildingRevenue.vacantTooltip} />
                     </div>
-                    <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">
                     <NumberInput
@@ -307,7 +301,7 @@ export const Step1: React.FC<Step1Props> = ({
                       onChange={(v) => updateLogements('inoccupes', 'loyerMensuel', v)}
                     />
                   </td>
-                  <td className="py-3 px-2 border-l border-gray-200">
+                  <td className="py-3 px-2 border-l border-gray-100">
                     <NumberInput
                       value={formData.locauxNonResidentiels.inoccupes.nombre}
                       onChange={(v) => updateLocaux('inoccupes', 'nombre', v)}
@@ -322,13 +316,13 @@ export const Step1: React.FC<Step1Props> = ({
                 </tr>
 
                 {/* Occupés par le locateur */}
-                <tr className="border-b">
-                  <td className="py-3">
-                    <div className="font-medium flex items-center gap-1">
+                <tr className="group hover:bg-corpiq-light-blue/10 transition-colors">
+                  <td className="py-3.5">
+                    <div className="font-medium text-sm text-gray-800 flex items-center gap-1">
                       {t.step1.buildingRevenue.occupiedByOwner}
                       <InfoTooltip content={t.step1.buildingRevenue.occupiedByOwnerTooltip} />
                     </div>
-                    <div className="text-sm text-gray-500">{t.step1.buildingRevenue.monthlyRent}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{t.step1.buildingRevenue.monthlyRent}</div>
                   </td>
                   <td className="py-3 px-2">
                     <NumberInput
@@ -342,7 +336,7 @@ export const Step1: React.FC<Step1Props> = ({
                       onChange={(v) => updateLogements('occupesLocateur', 'loyerMensuel', v)}
                     />
                   </td>
-                  <td className="py-3 px-2 border-l border-gray-200">
+                  <td className="py-3 px-2 border-l border-gray-100">
                     <NumberInput
                       value={formData.locauxNonResidentiels.occupesLocateur.nombre}
                       onChange={(v) => updateLocaux('occupesLocateur', 'nombre', v)}
@@ -357,18 +351,18 @@ export const Step1: React.FC<Step1Props> = ({
                 </tr>
 
                 {/* Sous-total */}
-                <tr className="bg-gray-50 font-semibold">
-                  <td className="py-3">{t.step1.buildingRevenue.subtotal}</td>
-                  <td className="py-3 px-2 text-center">
+                <tr className="bg-gray-50/80">
+                  <td className="py-3 font-semibold text-sm text-gray-700">{t.step1.buildingRevenue.subtotal}</td>
+                  <td className="py-3 px-2 text-center font-semibold tabular-nums text-gray-700">
                     {calculatedValues?.soustotalLogements.nombre || 0}
                   </td>
-                  <td className="py-3 px-2 text-right">
+                  <td className="py-3 px-2 text-right font-semibold tabular-nums text-gray-700">
                     {formatCurrency(calculatedValues?.soustotalLogements.loyer || 0)}
                   </td>
-                  <td className="py-3 px-2 text-center border-l border-gray-200">
+                  <td className="py-3 px-2 text-center border-l border-gray-200 font-semibold tabular-nums text-gray-700">
                     {calculatedValues?.soustotalNonResidentiels.nombre || 0}
                   </td>
-                  <td className="py-3 px-2 text-right">
+                  <td className="py-3 px-2 text-right font-semibold tabular-nums text-gray-700">
                     {formatCurrency(calculatedValues?.soustotalNonResidentiels.loyer || 0)}
                   </td>
                 </tr>
@@ -377,7 +371,7 @@ export const Step1: React.FC<Step1Props> = ({
           </div>
 
           {/* Totaux */}
-          <div className="bg-corpiq-light p-4 rounded-lg space-y-4">
+          <div className="bg-gray-50/80 p-5 rounded-xl border border-gray-100 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <LabelWithTooltip tooltip={t.step1.buildingRevenue.totalAnnualRentTooltip}>
@@ -386,9 +380,7 @@ export const Step1: React.FC<Step1Props> = ({
                 <CalculatedField value={calculatedValues?.totalLoyersAnnuel || 0} />
               </div>
               <div>
-                <LabelWithTooltip 
-                  tooltip={t.step1.buildingRevenue.otherRevenueTooltip}
-                >
+                <LabelWithTooltip tooltip={t.step1.buildingRevenue.otherRevenueTooltip}>
                   {t.step1.buildingRevenue.otherRevenue}
                 </LabelWithTooltip>
                 <CurrencyInput

@@ -53,7 +53,6 @@ export const Step2: React.FC<Step2Props> = ({
     });
   };
 
-  // Calculer les ajustements individuels pour l'affichage
   const ajustementTaxesMunicipales = React.useMemo(() => {
     if (!calculatedValues || calculatedValues.revenusImmeuble === 0) return 0;
     const { taxesMunicipales } = formData;
@@ -123,16 +122,17 @@ export const Step2: React.FC<Step2Props> = ({
         badge={2}
         tooltip={t.step2.tooltip}
       >
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-800">
+        <div className="bg-blue-50/60 border border-blue-200/50 rounded-xl p-4 mb-6">
+          <p className="text-sm text-blue-800 leading-relaxed">
             <strong>{t.step2.important}</strong> {t.step2.importantNote.replace('{rate}', ((calculatedValues?.tauxIPC || 0) * 100).toFixed(1))}
           </p>
         </div>
 
         <div className="space-y-6">
           {/* Taxes municipales */}
-          <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+          <div className="pb-6 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1.5 text-[15px]">
+              <div className="w-1.5 h-5 bg-corpiq-blue rounded-full mr-1" />
               {t.step2.municipalTaxes}
               <InfoTooltip content={t.step2.municipalTaxesTooltip} />
             </h3>
@@ -167,8 +167,9 @@ export const Step2: React.FC<Step2Props> = ({
           </div>
 
           {/* Taxes scolaires */}
-          <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+          <div className="pb-6 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1.5 text-[15px]">
+              <div className="w-1.5 h-5 bg-corpiq-blue rounded-full mr-1" />
               {t.step2.schoolTaxes}
               <InfoTooltip content={t.step2.schoolTaxesTooltip} />
             </h3>
@@ -201,8 +202,9 @@ export const Step2: React.FC<Step2Props> = ({
           </div>
 
           {/* Assurances */}
-          <div className="border-b border-gray-200 pb-6">
-            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1">
+          <div className="pb-6 border-b border-gray-100">
+            <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-1.5 text-[15px]">
+              <div className="w-1.5 h-5 bg-corpiq-bordeaux rounded-full mr-1" />
               {t.step2.insurance}
               <InfoTooltip content={t.step2.insuranceTooltip} />
             </h3>
@@ -235,13 +237,13 @@ export const Step2: React.FC<Step2Props> = ({
           </div>
 
           {/* Total */}
-          <div className="bg-corpiq-light p-4 rounded-lg">
+          <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-100">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="bg-corpiq-bordeaux text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="flex items-center gap-2.5">
+                <span className="bg-gradient-to-br from-corpiq-bordeaux to-corpiq-bordeaux-light text-white w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold shadow-sm">
                   2
                 </span>
-                <span className="font-semibold">{t.step2.totalAdjustment}</span>
+                <span className="font-semibold text-sm">{t.step2.totalAdjustment}</span>
                 <InfoTooltip content={t.step2.totalAdjustmentTooltip} />
               </div>
               <div className="w-40">
