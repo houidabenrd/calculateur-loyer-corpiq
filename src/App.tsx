@@ -171,9 +171,7 @@ function App() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-md bg-white/8 flex items-center justify-center border border-white/10">
-                <Building2 size={14} className="text-blue-300/50" />
-              </div>
+              <img src="/corpiq-logo.png" alt="CORPIQ" className="h-6 w-auto object-contain opacity-70" />
               <div>
                 <p className="font-bold text-xs tracking-wide">CORPIQ</p>
                 <p className="text-blue-300/35 text-[10px]">Corporation des propriétaires immobiliers du Québec</p>
