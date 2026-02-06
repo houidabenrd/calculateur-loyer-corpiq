@@ -211,47 +211,53 @@ interface CurrencyInputProps {
   id?: string;
 }
 
-export const CurrencyInput: React.FC<CurrencyInputProps> = ({
+export const CurrencyInput: React.FC<CurrencyInputProps> = React.memo(({
   value, onChange, placeholder = '0,00 $', disabled = false, className = '', id,
 }) => {
   const [displayValue, setDisplayValue] = React.useState('');
-  const [isFocused, setIsFocused] = React.useState(false);
+  const isFocusedRef = React.useRef(false);
+  const onChangeRef = React.useRef(onChange);
+  onChangeRef.current = onChange;
 
   React.useEffect(() => {
-    if (!isFocused) {
+    if (!isFocusedRef.current) {
       setDisplayValue(value === 0 ? '' : value.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
-  }, [value, isFocused]);
+  }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9,.-]/g, '');
     setDisplayValue(rawValue);
     const parsed = parseFloat(rawValue.replace(',', '.').replace(/\s/g, ''));
-    if (!isNaN(parsed)) onChange(Math.round(parsed * 100) / 100);
-    else if (rawValue === '' || rawValue === '-') onChange(0);
-  };
+    if (!isNaN(parsed)) onChangeRef.current(Math.round(parsed * 100) / 100);
+    else if (rawValue === '' || rawValue === '-') onChangeRef.current(0);
+  }, []);
 
-  const handleBlur = () => {
-    setIsFocused(false);
-    const parsed = parseFloat(displayValue.replace(',', '.').replace(/\s/g, ''));
-    if (isNaN(parsed)) { onChange(0); setDisplayValue(''); }
-    else {
+  const handleFocus = React.useCallback(() => {
+    isFocusedRef.current = true;
+  }, []);
+
+  const handleBlur = React.useCallback(() => {
+    isFocusedRef.current = false;
+    setDisplayValue(prev => {
+      const parsed = parseFloat(prev.replace(',', '.').replace(/\s/g, ''));
+      if (isNaN(parsed)) { onChangeRef.current(0); return ''; }
       const rounded = Math.round(parsed * 100) / 100;
-      onChange(rounded);
-      setDisplayValue(rounded.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    }
-  };
+      onChangeRef.current(rounded);
+      return rounded.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    });
+  }, []);
 
   return (
-    <div className="relative group">
+    <div className="relative group/currency">
       <input type="text" id={id} value={displayValue} onChange={handleChange}
-        onFocus={() => setIsFocused(true)} onBlur={handleBlur}
+        onFocus={handleFocus} onBlur={handleBlur}
         placeholder={placeholder} disabled={disabled}
         className={`input-currency pr-9 ${disabled ? 'input-readonly' : ''} ${className}`} />
-      <span className={`absolute right-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none font-bold transition-colors duration-200 ${isFocused ? 'text-corpiq-blue' : 'text-gray-400'}`}>$</span>
+      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm pointer-events-none font-bold transition-colors duration-200 text-gray-400 group-focus-within/currency:text-corpiq-blue">$</span>
     </div>
   );
-};
+});
 
 // ─── CalculatedField ─────────────────────────────────────────
 interface CalculatedFieldProps {

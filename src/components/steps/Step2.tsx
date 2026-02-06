@@ -10,12 +10,12 @@ import {
 } from '../ui';
 import { useLanguage } from '../../i18n/LanguageContext';
 
-// TaxRow défini EN DEHORS du composant pour éviter le remontage à chaque rendu
-const TaxRow: React.FC<{
+// TaxRow défini EN DEHORS et mémorisé pour éviter le remontage et les re-renders inutiles
+const TaxRow = React.memo<{
   label: string; tooltip: string; value1: number; onChange1: (v: number) => void; label1: string;
   value2: number; onChange2: (v: number) => void; label2: string; adjustment: number; id1: string; id2: string;
   adjustmentLabel: string;
-}> = ({ label, tooltip, value1, onChange1, label1, value2, onChange2, label2, adjustment, id1, id2, adjustmentLabel }) => (
+}>(({ label, tooltip, value1, onChange1, label1, value2, onChange2, label2, adjustment, id1, id2, adjustmentLabel }) => (
   <div className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
     <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
       <div className="w-1 h-5 bg-corpiq-blue rounded-full" />
@@ -37,7 +37,7 @@ const TaxRow: React.FC<{
       </div>
     </div>
   </div>
-);
+));
 
 interface Step2Props {
   formData: FormData;
@@ -56,16 +56,29 @@ export const Step2: React.FC<Step2Props> = ({
 }) => {
   const { t } = useLanguage();
 
-  const updateTaxesMunicipales = React.useCallback((field: 'anneeCourante' | 'anneePrecedente', value: number) => {
-    updateFormData({ taxesMunicipales: { ...formData.taxesMunicipales, [field]: value } });
+  // Callbacks stables pour éviter les re-renders inutiles des CurrencyInput
+  const onTaxeMuniCouranteChange = React.useCallback((v: number) => {
+    updateFormData({ taxesMunicipales: { ...formData.taxesMunicipales, anneeCourante: v } });
   }, [formData.taxesMunicipales, updateFormData]);
 
-  const updateTaxesScolaires = React.useCallback((field: 'anneeCourante' | 'anneePrecedente', value: number) => {
-    updateFormData({ taxesScolaires: { ...formData.taxesScolaires, [field]: value } });
+  const onTaxeMuniPrecedenteChange = React.useCallback((v: number) => {
+    updateFormData({ taxesMunicipales: { ...formData.taxesMunicipales, anneePrecedente: v } });
+  }, [formData.taxesMunicipales, updateFormData]);
+
+  const onTaxeScolCouranteChange = React.useCallback((v: number) => {
+    updateFormData({ taxesScolaires: { ...formData.taxesScolaires, anneeCourante: v } });
   }, [formData.taxesScolaires, updateFormData]);
 
-  const updateAssurances = React.useCallback((field: 'dec2025' | 'dec2024', value: number) => {
-    updateFormData({ assurances: { ...formData.assurances, [field]: value } });
+  const onTaxeScolPrecedenteChange = React.useCallback((v: number) => {
+    updateFormData({ taxesScolaires: { ...formData.taxesScolaires, anneePrecedente: v } });
+  }, [formData.taxesScolaires, updateFormData]);
+
+  const onAssurDec2025Change = React.useCallback((v: number) => {
+    updateFormData({ assurances: { ...formData.assurances, dec2025: v } });
+  }, [formData.assurances, updateFormData]);
+
+  const onAssurDec2024Change = React.useCallback((v: number) => {
+    updateFormData({ assurances: { ...formData.assurances, dec2024: v } });
   }, [formData.assurances, updateFormData]);
 
   const ajustementTaxesMunicipales = React.useMemo(() => {
@@ -118,16 +131,16 @@ export const Step2: React.FC<Step2Props> = ({
         <div className="space-y-5">
           <TaxRow
             label={t.step2.municipalTaxes} tooltip={t.step2.municipalTaxesTooltip}
-            value1={formData.taxesMunicipales.anneeCourante} onChange1={(v) => updateTaxesMunicipales('anneeCourante', v)} label1={t.step2.year2026} id1="taxeMuni2026"
-            value2={formData.taxesMunicipales.anneePrecedente} onChange2={(v) => updateTaxesMunicipales('anneePrecedente', v)} label2={t.step2.year2025} id2="taxeMuni2025"
+            value1={formData.taxesMunicipales.anneeCourante} onChange1={onTaxeMuniCouranteChange} label1={t.step2.year2026} id1="taxeMuni2026"
+            value2={formData.taxesMunicipales.anneePrecedente} onChange2={onTaxeMuniPrecedenteChange} label2={t.step2.year2025} id2="taxeMuni2025"
             adjustment={ajustementTaxesMunicipales}
             adjustmentLabel={t.step2.monthlyAdjustment}
           />
 
           <TaxRow
             label={t.step2.schoolTaxes} tooltip={t.step2.schoolTaxesTooltip}
-            value1={formData.taxesScolaires.anneeCourante} onChange1={(v) => updateTaxesScolaires('anneeCourante', v)} label1={t.step2.year2025_2026} id1="taxeScol2526"
-            value2={formData.taxesScolaires.anneePrecedente} onChange2={(v) => updateTaxesScolaires('anneePrecedente', v)} label2={t.step2.year2024_2025} id2="taxeScol2425"
+            value1={formData.taxesScolaires.anneeCourante} onChange1={onTaxeScolCouranteChange} label1={t.step2.year2025_2026} id1="taxeScol2526"
+            value2={formData.taxesScolaires.anneePrecedente} onChange2={onTaxeScolPrecedenteChange} label2={t.step2.year2024_2025} id2="taxeScol2425"
             adjustment={ajustementTaxesScolaires}
             adjustmentLabel={t.step2.monthlyAdjustment}
           />
@@ -144,13 +157,13 @@ export const Step2: React.FC<Step2Props> = ({
                 <LabelWithTooltip htmlFor="assur2025">
                   {t.step2.asOfDec31} <strong>2025</strong>
                 </LabelWithTooltip>
-                <CurrencyInput id="assur2025" value={formData.assurances.dec2025} onChange={(v) => updateAssurances('dec2025', v)} />
+                <CurrencyInput id="assur2025" value={formData.assurances.dec2025} onChange={onAssurDec2025Change} />
               </div>
               <div>
                 <LabelWithTooltip htmlFor="assur2024">
                   {t.step2.asOfDec31} <strong>2024</strong>
                 </LabelWithTooltip>
-                <CurrencyInput id="assur2024" value={formData.assurances.dec2024} onChange={(v) => updateAssurances('dec2024', v)} />
+                <CurrencyInput id="assur2024" value={formData.assurances.dec2024} onChange={onAssurDec2024Change} />
               </div>
               <div>
                 <LabelWithTooltip>{t.step2.monthlyAdjustment}</LabelWithTooltip>
