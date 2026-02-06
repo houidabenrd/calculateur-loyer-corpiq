@@ -84,13 +84,13 @@ body {
   }
 
   .section-header {
-    @apply text-white px-6 py-4 font-bold text-[15px] relative overflow-hidden rounded-t-2xl;
+    @apply text-white px-6 py-4 font-bold text-[15px] relative rounded-t-2xl;
     background: linear-gradient(135deg, #0c2240 0%, #13315c 50%, #1a4178 100%);
   }
 
   .section-header::before {
     content: '';
-    @apply absolute inset-0 opacity-[0.07];
+    @apply absolute inset-0 opacity-[0.07] pointer-events-none;
     background: repeating-linear-gradient(
       -45deg, transparent, transparent 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 16px
     );
