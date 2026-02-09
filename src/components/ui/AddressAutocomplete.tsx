@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapPin, Loader2, Search, X } from 'lucide-react';
+import { MapPin, Loader2, Search, X, Home } from 'lucide-react';
 
 interface PhotonFeature {
   geometry: { coordinates: [number, number] };
@@ -23,14 +23,70 @@ interface PhotonResponse {
 interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
+  onUnitDetected?: (unit: string) => void;
   placeholder?: string;
   id?: string;
   required?: boolean;
 }
 
+// ─── Détection automatique d'unité / appartement ───────────────────────────
+// Patterns courants au Québec : "app 3", "apt. 4B", "unité 5", "#3", "suite 2"
+// En début : "app 3, 123 rue..." ou "apt. 4B - 456 boul..."
+// En fin   : "123 rue Principale, app 3" ou "456 boul. St-Laurent apt. 4B"
+// Format tiret : "3-123 rue..." (unité-numéro civique)
+
+const UNIT_PREFIX_PATTERNS: RegExp[] = [
+  /^(?:app\.?|apt\.?|unit[ée]?\.?|suite|bureau)\s+(\d+\w*)\s*[,\-–]\s*/i,
+  /^#\s*(\d+\w*)\s*[,\-–]\s*/i,
+];
+
+const UNIT_SUFFIX_PATTERNS: RegExp[] = [
+  /[,\-–]\s*(?:app\.?|apt\.?|unit[ée]?\.?|suite|bureau)\s+(\d+\w*)\s*$/i,
+  /[,\-–]\s*#\s*(\d+\w*)\s*$/i,
+];
+
+// Format "3-1234 rue..." : le premier chiffre (1-2 chars) suivi d'un tiret puis du numéro civique (3+ chars)
+const DASH_UNIT_PATTERN = /^(\d{1,2})\s*[-–]\s*(\d{3,}.*)$/;
+
+function extractUnit(input: string): { unit: string; cleanQuery: string } {
+  // Vérifier les patterns de préfixe
+  for (const pattern of UNIT_PREFIX_PATTERNS) {
+    const match = input.match(pattern);
+    if (match) {
+      return {
+        unit: match[1],
+        cleanQuery: input.replace(match[0], '').trim(),
+      };
+    }
+  }
+
+  // Vérifier les patterns de suffixe
+  for (const pattern of UNIT_SUFFIX_PATTERNS) {
+    const match = input.match(pattern);
+    if (match) {
+      return {
+        unit: match[1],
+        cleanQuery: input.replace(match[0], '').trim(),
+      };
+    }
+  }
+
+  // Format tiret : "3-1234 rue Principale" → unité 3, adresse "1234 rue Principale"
+  const dashMatch = input.match(DASH_UNIT_PATTERN);
+  if (dashMatch) {
+    return {
+      unit: dashMatch[1],
+      cleanQuery: dashMatch[2].trim(),
+    };
+  }
+
+  return { unit: '', cleanQuery: input };
+}
+
 export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   value,
   onChange,
+  onUnitDetected,
   placeholder = '',
   id,
 }) => {
@@ -41,6 +97,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [hasSelected, setHasSelected] = useState(!!value);
   const [noResults, setNoResults] = useState(false);
+  const [detectedUnit, setDetectedUnit] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,7 +155,19 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   };
 
   const searchAddress = useCallback(async (searchQuery: string) => {
-    const trimmed = searchQuery.trim();
+    // Détecter l'unité et nettoyer la requête
+    const { unit, cleanQuery } = extractUnit(searchQuery);
+    
+    // Mettre à jour l'unité détectée
+    if (unit !== detectedUnit) {
+      setDetectedUnit(unit);
+      if (unit && onUnitDetected) {
+        onUnitDetected(unit);
+      }
+    }
+    
+    // Utiliser la requête nettoyée (sans l'unité) pour la recherche
+    const trimmed = cleanQuery.trim();
     if (trimmed.length < 3) {
       setSuggestions([]);
       setShowDropdown(false);
@@ -167,13 +236,29 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       setIsLoading(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [detectedUnit, onUnitDetected]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setQuery(newValue);
     setHasSelected(false);
     onChange(newValue);
+
+    // Détecter l'unité en temps réel pendant la saisie
+    const { unit } = extractUnit(newValue);
+    if (unit !== detectedUnit) {
+      setDetectedUnit(unit);
+      if (onUnitDetected) {
+        onUnitDetected(unit);
+      }
+    }
+    // Si l'utilisateur efface tout le texte, réinitialiser l'unité
+    if (!newValue.trim()) {
+      setDetectedUnit('');
+      if (onUnitDetected) {
+        onUnitDetected('');
+      }
+    }
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -195,6 +280,10 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setHasSelected(true);
     setSuggestions([]);
     setNoResults(false);
+    // Notifier le parent de l'unité détectée lors de la sélection
+    if (detectedUnit && onUnitDetected) {
+      onUnitDetected(detectedUnit);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -228,6 +317,10 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setShowDropdown(false);
     setHasSelected(false);
     setNoResults(false);
+    setDetectedUnit('');
+    if (onUnitDetected) {
+      onUnitDetected('');
+    }
     inputRef.current?.focus();
   };
 
@@ -270,6 +363,16 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         )}
       </div>
 
+      {/* Indicateur d'unité détectée */}
+      {detectedUnit && (
+        <div className="mt-1.5 flex items-center gap-1.5 px-1">
+          <Home size={13} className="text-emerald-600 flex-shrink-0" />
+          <span className="text-xs text-emerald-700 font-medium">
+            Unité / App. <span className="font-bold">{detectedUnit}</span> détectée automatiquement
+          </span>
+        </div>
+      )}
+
       {/* Dropdown */}
       {showDropdown && (
         <div className="absolute z-[60] mt-1 w-full bg-white rounded-xl border border-gray-200 address-dropdown-enter" style={{boxShadow: '0 4px 20px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.06)'}}>
@@ -293,7 +396,14 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                       index === highlightedIndex ? 'text-corpiq-blue' : 'text-gray-400'
                     }`}
                   />
-                  <span className="text-sm leading-snug">{suggestion.label}</span>
+                  <div className="flex flex-col">
+                    {detectedUnit && (
+                      <span className="text-[10px] text-emerald-600 font-semibold mb-0.5">
+                        App. {detectedUnit}
+                      </span>
+                    )}
+                    <span className="text-sm leading-snug">{suggestion.label}</span>
+                  </div>
                 </button>
               ))}
             </div>

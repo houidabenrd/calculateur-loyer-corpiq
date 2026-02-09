@@ -148,7 +148,10 @@ export const generatePDF = async (
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(50, 50, 50);
   y += 5;
-  const addressLines = doc.splitTextToSize(formData.adresse || (language === 'fr' ? 'Non spécifié' : 'Not specified'), contentWidth);
+  const fullAddress = formData.unite 
+    ? `${formData.adresse}, ${language === 'fr' ? 'Unité' : 'Unit'} ${formData.unite}` 
+    : (formData.adresse || (language === 'fr' ? 'Non spécifié' : 'Not specified'));
+  const addressLines = doc.splitTextToSize(fullAddress, contentWidth);
   addressLines.forEach((line: string) => {
     doc.text(line, margin, y);
     y += 5;

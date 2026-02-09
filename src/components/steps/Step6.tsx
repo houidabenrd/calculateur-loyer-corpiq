@@ -140,7 +140,9 @@ export const Step6: React.FC<Step6Props> = ({
           {formData.adresse && (
             <div className="mt-6 pt-4 border-t border-white/10">
               <div className="text-[10px] text-white/35 font-bold uppercase tracking-widest mb-1">{t.step5.result.concernedDwelling}</div>
-              <div className="font-semibold text-white/80">{formData.adresse}</div>
+              <div className="font-semibold text-white/80">
+                {formData.unite ? `${formData.adresse}, ${t.step1.housingInfo.unit} ${formData.unite}` : formData.adresse}
+              </div>
             </div>
           )}
         </div>

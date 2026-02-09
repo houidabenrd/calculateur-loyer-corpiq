@@ -60,15 +60,36 @@ export const Step1: React.FC<Step1Props> = ({
       <SectionCard title={t.step1.housingInfo.title}>
         <div className="space-y-5">
           <div>
-            <LabelWithTooltip htmlFor="adresse">
-              {t.step1.housingInfo.address}
-            </LabelWithTooltip>
-            <AddressAutocomplete
-              id="adresse"
-              value={formData.adresse}
-              onChange={(value) => updateFormData({ adresse: value })}
-              placeholder={t.step1.housingInfo.addressPlaceholder}
-            />
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <LabelWithTooltip htmlFor="adresse">
+                  {t.step1.housingInfo.address}
+                </LabelWithTooltip>
+                <AddressAutocomplete
+                  id="adresse"
+                  value={formData.adresse}
+                  onChange={(value) => updateFormData({ adresse: value })}
+                  onUnitDetected={(unit) => updateFormData({ unite: unit })}
+                  placeholder={t.step1.housingInfo.addressPlaceholder}
+                />
+              </div>
+              <div className="w-28 flex-shrink-0">
+                <LabelWithTooltip htmlFor="unite">
+                  {t.step1.housingInfo.unit}
+                </LabelWithTooltip>
+                <input
+                  type="text"
+                  id="unite"
+                  value={formData.unite}
+                  onChange={(e) => updateFormData({ unite: e.target.value })}
+                  placeholder={t.step1.housingInfo.unitPlaceholder}
+                  className="input-field text-center"
+                />
+              </div>
+            </div>
+            <p className="mt-1.5 text-xs text-gray-500 italic">
+              {t.step1.housingInfo.addressNote}
+            </p>
           </div>
           
           <Checkbox

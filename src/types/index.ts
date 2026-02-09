@@ -70,6 +70,7 @@ export interface Deneigement {
 
 export interface FormData {
   // Section 1: Informations de base
+  unite: string;
   adresse: string;
   isRPA: boolean;
   loyerMensuelActuel: number;
@@ -156,6 +157,7 @@ export const TAUX_SERVICES_AINES_2026 = 0.067; // 6.7% - Taux fixe TAL 2026 pour
 export const TAUX_IMMOBILISATION_TAL = 0.05; // 5% - Taux d'immobilisation TAL pour réparations/améliorations
 
 export const initialFormData: FormData = {
+  unite: '',
   adresse: '',
   isRPA: false,
   loyerMensuelActuel: 0,

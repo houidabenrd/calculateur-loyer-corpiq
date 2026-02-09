@@ -45,8 +45,11 @@ export interface Translations {
     housingInfo: {
       title: string;
       tooltip: string;
+      unit: string;
+      unitPlaceholder: string;
       address: string;
       addressPlaceholder: string;
+      addressNote: string;
       rpa: string;
     };
     baseAdjustment: {
@@ -289,8 +292,11 @@ export const translations: Record<Language, Translations> = {
       housingInfo: {
         title: 'Information on the concerned dwelling',
         tooltip: 'Information about the dwelling for which you are calculating the rent increase',
+        unit: 'Unit / Apt.',
+        unitPlaceholder: 'Ex: 3, A',
         address: 'Address of the concerned dwelling',
-        addressPlaceholder: 'Ex: 123 Main Street, Montreal, QC H1A 2B3',
+        addressPlaceholder: 'Ex: apt 3, 123 Main Street, Montreal, QC',
+        addressNote: 'Please enter the address of your building. If applicable, don\'t forget to also specify the apartment number.',
         rpa: 'This building is in whole or in part a private residence for seniors (RPA) or another accommodation facility offering services to seniors',
       },
       baseAdjustment: {
@@ -519,8 +525,11 @@ export const translations: Record<Language, Translations> = {
       housingInfo: {
         title: 'Renseignements sur le logement concerné',
         tooltip: 'Informations sur le logement pour lequel vous calculez l\'augmentation de loyer',
+        unit: 'Unité / App.',
+        unitPlaceholder: 'Ex: 3, A',
         address: 'Adresse du logement concerné',
-        addressPlaceholder: 'Ex: 123, rue Principale, Montréal, QC H1A 2B3',
+        addressPlaceholder: 'Ex: app 3, 123 rue Principale, Montréal, QC',
+        addressNote: 'Veuillez indiquer l\'adresse de votre immeuble. Si applicable, n\'oubliez pas également de préciser le numéro d\'appartement.',
         rpa: 'Cet immeuble est en tout ou en partie une résidence privée pour aînés (RPA) ou un autre lieu d\'hébergement offrant des services aux aînés',
       },
       baseAdjustment: {
