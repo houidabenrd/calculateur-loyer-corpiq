@@ -156,7 +156,18 @@ export const generatePDF = async (
     doc.text(line, margin, y);
     y += 5;
   });
-  y += 3;
+  y += 2;
+
+  // Date de génération
+  const generationDate = language === 'fr'
+    ? new Date().toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })
+    : new Date().toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  doc.setTextColor(120, 120, 120);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'italic');
+  doc.text(`${t.pdf.generatedOn} ${generationDate}`, margin, y);
+  y += 5;
+
   addSeparator();
   y += 2;
 
