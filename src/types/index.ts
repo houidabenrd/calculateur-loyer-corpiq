@@ -93,7 +93,7 @@ export interface FormData {
   variationsAide: LigneVariationAide[];
   
   // Section 5: Déneigement
-  hasDeneigement: boolean;
+  hasDeneigement: boolean | null;
   deneigement: Deneigement;
 }
 
@@ -181,6 +181,6 @@ export const initialFormData: FormData = {
   nouvellesDepenses: [],
   variationsAide: [],
   
-  hasDeneigement: false,
+  hasDeneigement: null,
   deneigement: { frais2025: 0, frais2024: 0, ajustement: 0 },
 };

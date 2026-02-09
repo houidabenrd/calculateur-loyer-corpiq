@@ -52,6 +52,7 @@ export interface Translations {
     baseAdjustment: {
       title: string;
       tooltip: string;
+      note: string;
       currentRent: string;
       currentRentTooltip: string;
       ipcVariation: string;
@@ -205,6 +206,8 @@ export interface Translations {
     legalNotice: {
       title: string;
       text: string;
+      warningTitle: string;
+      warningText: string;
     };
     actions: {
       exportPDF: string;
@@ -239,6 +242,7 @@ export interface Translations {
     newRent: string;
     variation: string;
     legalNotice: string;
+    warning: string;
     generatedOn: string;
     by: string;
   };
@@ -292,6 +296,7 @@ export const translations: Record<Language, Translations> = {
       baseAdjustment: {
         title: 'Base rent adjustment',
         tooltip: 'The base adjustment is calculated according to the annual average variation of the CPI for Quebec',
+        note: 'Please note that you must perform this calculation for each housing unit in your building.',
         currentRent: 'Monthly rent of the dwelling',
         currentRentTooltip: 'The current monthly rent, before any increase',
         ipcVariation: 'Annual average variation of the Consumer Price Index (CPI) for Quebec',
@@ -346,7 +351,7 @@ export const translations: Record<Language, Translations> = {
       title: 'Major repairs or improvements',
       tooltip: 'Major repairs or improvements give rise to capital expenditures, which are not part of the recurring expenses you regularly assume for the building. These may include work to repair or modify the main structural elements of the building (e.g., roof, plumbing, heating system, insulation, windows, exterior cladding, foundation, French drain, electrical panel) or renovation work (e.g., replacement of cabinets, countertops, plumbing, ceramic, or flooring) in dwellings or common areas.\n\nAnnex I of the Regulation amending the Regulation respecting the criteria for the fixing of rent also provides a list of expenses related to major repairs and improvements.',
       howItWorks: 'How it works:',
-      howItWorksNote: 'Expenses are divided by 20 years, then distributed proportionally among the concerned dwellings/units according to their rent. Only the share attributable to the dwelling for which you are calculating the increase is counted.',
+      howItWorksNote: 'The adjustment in this section already accounts for the 5% rate applicable to major repairs and improvements, allowing amortization over a period of 20 years. Therefore, to calculate this adjustment, expenses are multiplied by 5%, divided by 12, and multiplied by the proportional share attributable to the concerned dwelling.',
       noRepairs: 'No major repair or improvement added.',
       addRepair: 'Add a repair',
       addLine: 'Add a line',
@@ -373,9 +378,9 @@ export const translations: Record<Language, Translations> = {
     step4: {
       newExpenses: {
         title: 'New expenses arising from the implementation of a service or the addition of an accessory or dependency',
-        tooltip: 'In addition to capital expenditures, you may have to assume new expenses following the implementation of a service, an accessory, or a dependency. This is the case, for example, when the implementation of a service causes operating expenses that you did not previously have to assume, or when you need to pay staff to offer a new service to tenants. You must estimate the cost of these new expenses for a full year.',
+        tooltip: 'In addition to capital expenditures, you may have to assume new recurring expenses following the implementation of a service, an accessory, or a dependency. This is the case, for example, when the implementation of a service causes operating expenses that you did not previously have to assume, or when you need to pay staff to offer a new service to tenants. You must estimate the cost of these new expenses for a full year. You must specify which dwellings benefit from these new expenses.',
         note: 'Note:',
-        noteText: 'Unlike major repairs, new expenses are not amortized over 20 years. They are divided by 12 months and distributed according to the weight of the dwelling.',
+        noteText: 'Unlike major repairs, new expenses are not amortized over 20 years. They are divided by 12 months and distributed according to the proportional share of the concerned dwelling.',
         noExpenses: 'No new expense added.',
         addExpense: 'Add a new expense',
         addLine: 'Add a line',
@@ -407,8 +412,8 @@ export const translations: Record<Language, Translations> = {
       snowQuestion: 'Do you have snow removal fees for a mobile home park?',
       snowRemoval: {
         title: 'Snow removal fees (mobile home parks)',
-        tooltip: 'Only fill in this section if it is a mobile home park.',
-        note: 'This section only applies to mobile home parks. If you are not in this case, leave these fields at zero.',
+        tooltip: '',
+        note: '',
         noteText: '',
         fees2025: 'Fees 2025',
         fees2024: 'Fees 2024',
@@ -436,7 +441,9 @@ export const translations: Record<Language, Translations> = {
       },
       legalNotice: {
         title: 'Important notice:',
-        text: 'This calculator is provided for informational purposes only and reproduces the methodology of the Administrative Housing Tribunal (TAL). The result obtained does not constitute a TAL decision and does not bind the parties. In case of disagreement, only the TAL can set the rent in a binding manner.',
+        text: 'This calculator is provided for informational purposes only and reproduces the new rent fixing rules of the Administrative Housing Tribunal (TAL). The result obtained does not constitute a TAL decision and does not bind the parties. In case of disagreement, please contact the TAL to set the rent applicable for the next renewal term.',
+        warningTitle: 'Disclaimer',
+        warningText: 'By using this calculation, the user acknowledges that the results of the rent adjustment calculator depend entirely on the data provided. No liability can be incurred for consequences arising from inaccurate, incomplete, or erroneous information entered by the user.',
       },
       actions: {
         exportPDF: 'Export to PDF',
@@ -467,6 +474,7 @@ export const translations: Record<Language, Translations> = {
       newRent: 'Recommended new monthly rent:',
       variation: 'Variation:',
       legalNotice: 'IMPORTANT NOTICE',
+      warning: 'DISCLAIMER',
       generatedOn: 'Document generated on',
       by: 'by the CORPIQ Calculator 2026',
     },
@@ -518,6 +526,7 @@ export const translations: Record<Language, Translations> = {
       baseAdjustment: {
         title: 'Ajustement de base du loyer',
         tooltip: 'L\'ajustement de base est calculé selon la variation annuelle moyenne de l\'IPC pour le Québec',
+        note: 'Prenez note que vous devez effectuer ce calcul pour chaque unité de logement dans votre immeuble.',
         currentRent: 'Loyer mensuel du logement',
         currentRentTooltip: 'Le loyer mensuel actuel, avant toute augmentation',
         ipcVariation: 'Variation annuelle moyenne de l\'indice des prix à la consommation (IPC) pour le Québec',
@@ -533,17 +542,17 @@ export const translations: Record<Language, Translations> = {
         number: 'Nombre',
         monthlyRent: 'Loyers mensuels (totaux)',
         rented: 'Loués',
-        rentedTooltip: 'Loués : Indiquez le montant total des loyers exigibles pour le mois de décembre 2025.',
+        rentedTooltip: 'Indiquez le montant total des loyers exigibles pour le mois de décembre 2025.',
         vacant: 'Inoccupés',
-        vacantTooltip: 'Inoccupés : Indiquez le montant total des loyers des logements vacants en décembre 2025. Ce montant doit être estimé en fonction du loyer habituellement demandé pour des logements ou locaux comparables',
+        vacantTooltip: 'Indiquez le montant total des loyers des logements vacants en décembre 2025. Ce montant doit être estimé en fonction du loyer habituellement demandé pour des logements ou locaux comparables.',
         occupiedByOwner: 'Occupés par le locateur ou la locatrice',
-        occupiedByOwnerTooltip: 'Occupés par le locateur : Un local occupé par la famille du locateur, par un employé ou utilisé pour l\'exploitation de l\'immeuble est classé dans la catégorie « Occupés par le locateur ».\nIndiquez le montant total des loyers correspondant aux logements occupés par le locateur en décembre 2025, en l\'évaluant selon le loyer habituellement payé pour des logements ou locaux comparables.',
-        nonResidentialTooltip: 'Locaux non résidentiels : Il s\'agit de locaux utilisés à des fins commerciales, professionnelles, industrielles ou artisanales. Si l\'immeuble en comprend, indiquez le total des loyers du mois de décembre 2025, en incluant, si applicable, une estimation du loyer normal pour les locaux non loués.',
+        occupiedByOwnerTooltip: 'Un local occupé par la famille du locateur, par un employé ou utilisé pour l\'exploitation de l\'immeuble est classé dans la catégorie « Occupés par le locateur ».\nIndiquez le montant total des loyers correspondant aux logements occupés par le locateur en décembre 2025, en l\'évaluant selon le loyer habituellement payé pour des logements ou locaux comparables.',
+        nonResidentialTooltip: 'Il s\'agit de locaux utilisés à des fins commerciales, professionnelles, industrielles ou artisanales. Si l\'immeuble en comprend, indiquez le total des loyers du mois de décembre 2025, en incluant, si applicable, une estimation du loyer normal pour les locaux non loués.',
         subtotal: 'Sous-total',
         totalAnnualRent: 'Total des loyers sur une base annuelle',
         totalAnnualRentTooltip: '(Total loyers logements + locaux) × 12 mois',
         otherRevenue: 'Autres revenus provenant de l\'exploitation de l\'immeuble',
-        otherRevenueTooltip: 'Occupés par le locateur :Indiquez le montant annuel des revenus autres que ceux perçus de façon régulière auprès des locataires de votre immeuble, à l\'exclusion des revenus d\'exploitation d\'un logement non résidentiel. Ces revenus peuvent notamment provenir de services facturés à l\'utilisation (buanderie, bornes de recharge électrique, etc.) ou de sommes perçues auprès de personnes non locataires, par exemple la location d\'un espace de stationnement.',
+        otherRevenueTooltip: 'Indiquez le montant annuel des revenus autres que ceux perçus de façon régulière auprès des locataires de votre immeuble, à l\'exclusion des revenus d\'exploitation d\'un logement non résidentiel. Ces revenus peuvent notamment provenir de services facturés à l\'utilisation (buanderie, bornes de recharge électrique, etc.) ou de sommes perçues auprès de personnes non locataires, par exemple la location d\'un espace de stationnement.',
       },
     },
     step2: {
@@ -570,9 +579,9 @@ export const translations: Record<Language, Translations> = {
     },
     step3: {
       title: 'Réparations ou améliorations majeures',
-      tooltip: 'Les réparations ou améliorations majeures donnent lieu à des dépenses d\'immobilisation, qui ne font pas partie des dépenses récurrentes que vous assumez régulièrement pour l\'immeuble. Il peut s\'agir de travaux visant à réparer ou modifier les principaux éléments de la structure de l\'immeuble (p. ex. : toit, tuyauterie, système de chauffage, isolation, fenestration, revêtement extérieur, fondation, drain français, panneau électrique) ou de travaux de rénovation (p. ex. : remplacement des armoires, comptoirs, de la plomberie, de la céramique ou du plancher) dans les logements ou les espaces communs.\n\nL\'annexe I du Règlement modifiant le Règlement sur les critères de fixation de loyer prévoit également une liste de dépenses rattachées aux réparations et améliorations majeures.\n\n« 1. Travaux de maintien de l\'intégrité physique du bâtiment :\n\n1° Structure et fondations :\na) Réparation ou renforcement des fondations relativement, entre autres, à des fissures ou à des affaissements;\nb) Réfection ou renforcement de la charpente relativement, entre autres, à des poutres, à des colonnes ou à des murs porteurs;\n\n2° Toiture et enveloppe extérieure :\na) Réfection de la toiture comprenant, entre autres, le remplacement du bardeau, de la membrane ou de l\'isolation de l\'entretoit;\nb) Réparation ou remplacement du revêtement extérieur;\nc) Réfection des balcons, des escaliers ou des garde-corps;\nd) Réparation des corniches, des solins ou des gouttières;\n\n3° Maçonnerie :\na) Rejointement des briques;\nb) Réparation des fissures et délamination;\n\n4° Menuiseries extérieures :\na) Remplacement ou réparation majeure des portes ou des fenêtres détériorées;\nb) Réparation majeure des cadres ou des seuils;\n\n5° Drainage et fondations :\na) Remplacement ou installation de drains français;\nb) Étanchéisation des fondations;\n\n6° Mise à niveau des systèmes de sécurité, entre autres des gicleurs, des détecteurs de fumée, des extincteurs ou des escaliers de secours.\n\n2. Travaux d\'amélioration ou de modernisation :\n\n1° Cuisine et salle de bain :\na) Rénovation majeure, entre autres le remplacement des armoires, des comptoirs, de la plomberie ou de la céramique;\nb) Mise aux normes de la plomberie;\n\n2° Revêtements intérieurs :\na) Réfection ou remplacement des planchers;\nb) Réfection ou peinture des murs ou des plafonds;\n\n3° Électricité :\na) Ajout de prises électriques ou d\'éclairage encastré;\nb) Remplacement ou ajout de panneaux électriques;\nc) Mise aux normes des installations électriques;\n\n4° Ajout ou amélioration de l\'insonorisation entre unités;\n\n5° Agréments modernes :\na) Installation de buanderies privées ou partagées;\nb) Ajout de rangements, entre autres des casiers au sous-sol, ou des cabanons;\nc) Réfection des espaces communs, notamment le hall d\'entrée ou les escaliers.\n\n3. Travaux à impact énergétique, efficacité énergétique et adaptation aux changements climatiques :\n\n1° Ajout d\'isolant dans les murs, la toiture ou les planchers;\n\n2° Remplacement ou amélioration du système de chauffage ou de climatisation;\n\n3° Énergie renouvelable :\na) Installation de panneaux solaires photovoltaïques ou thermiques;\nb) Installation de bornes de recharge de véhicules électriques;\n\n4° Adaptation aux changements climatiques :\na) Aménagements pour prévenir les inondations, entre autres un système de pompage ou des clapets antiretour;\nb) Végétalisation, entre autres l\'aménagement de toits verts ou la plantation d\'arbres dans le but de réduire les îlots de chaleur;\nc) Réfection des aires imperméabilisées, notamment le pavage. »',
+      tooltip: 'Les réparations ou améliorations majeures donnent lieu à des dépenses d\'immobilisation, qui ne font pas partie des dépenses récurrentes que vous assumez régulièrement pour l\'immeuble. Il peut s\'agir de travaux visant à réparer ou modifier les principaux éléments de la structure de l\'immeuble (p. ex. : toit, tuyauterie, système de chauffage, isolation, fenestration, revêtement extérieur, fondation, drain français, panneau électrique) ou de travaux de rénovation (p. ex. : remplacement des armoires, comptoirs, de la plomberie, de la céramique ou du plancher) dans les logements ou les espaces communs.\n\nL\'annexe I du Règlement modifiant le Règlement sur les critères de fixation de loyer prévoit également une liste de dépenses rattachées aux réparations et améliorations majeures.',
       howItWorks: 'Comment ça fonctionne:',
-      howItWorksNote: 'Les dépenses sont divisées par 20 ans, puis réparties proportionnellement entre les logements/locaux concernés selon leur loyer. Seule la part attribuable au logement pour lequel vous calculez l\'augmentation est comptée.',
+      howItWorksNote: 'L\'ajustement au niveau de cette section tient déjà compte du taux de 5 % applicable aux réparations et améliorations majeures, permettant un amortissement sur une période de 20 ans. Donc, pour calculer cet ajustement, les dépenses sont multipliées par 5%, divisées par 12 et multipliées par la quote-part attribuable au logement concerné.',
       noRepairs: 'Aucune réparation ou amélioration majeure ajoutée.',
       addRepair: 'Ajouter une réparation',
       addLine: 'Ajouter une ligne',
@@ -599,9 +608,9 @@ export const translations: Record<Language, Translations> = {
     step4: {
       newExpenses: {
         title: 'Nouvelles dépenses générées par la mise en place d\'un service ou de l\'ajout d\'un accessoire ou d\'une dépendance',
-        tooltip: 'En plus des dépenses d\'immobilisation, il est possible que vous ayez à assumer de nouvelles dépenses à la suite de la mise en place d\'un service, d\'un accessoire ou d\'une dépendance. C\'est le cas, par exemple, lorsque la mise en place d\'un service occasionne des dépenses de fonctionnement que vous n\'aviez pas à assumer précédemment, ou encore lorsque vous devez rémunérer du personnel pour offrir un nouveau service aux locataires. Vous devez estimer le coût de ces nouvelles dépenses pour une année complète.',
+        tooltip: 'En plus des dépenses d\'immobilisation, il est possible que vous ayez à assumer de nouvelles dépenses récurrentes à la suite de la mise en place d\'un service, d\'un accessoire ou d\'une dépendance. C\'est le cas, par exemple, lorsque la mise en place d\'un service occasionne des dépenses de fonctionnement que vous n\'aviez pas à assumer précédemment, ou encore lorsque vous devez rémunérer du personnel pour offrir un nouveau service aux locataires. Vous devez estimer le coût de ces nouvelles dépenses pour une année complète. Vous devez spécifier quels sont les logements bénéficiaires de ces nouvelles dépenses.',
         note: 'Note:',
-        noteText: 'Contrairement aux réparations majeures, les nouvelles dépenses ne sont pas amorties sur 20 ans. Elles sont divisées par 12 mois et réparties selon la cote part du logement.',
+        noteText: 'Contrairement aux réparations majeures, les nouvelles dépenses ne sont pas amorties sur 20 ans. Elles sont divisées par 12 mois et réparties selon la quote-part du logement concerné.',
         noExpenses: 'Aucune nouvelle dépense ajoutée.',
         addExpense: 'Ajouter une nouvelle dépense',
         addLine: 'Ajouter une ligne',
@@ -633,8 +642,8 @@ export const translations: Record<Language, Translations> = {
       snowQuestion: 'Avez-vous des frais de déneigement pour un parc de maisons mobiles ?',
       snowRemoval: {
         title: 'Frais de déneigement (parc de maisons mobiles)',
-        tooltip: 'Ne remplissez cette section que s\'il s\'agit d\'un parc de maisons mobiles.',
-        note: 'Cette section s\'applique uniquement aux parcs de maisons mobiles. Si vous n\'êtes pas dans ce cas, laissez ces champs à zéro.',
+        tooltip: '',
+        note: '',
         noteText: '',
         fees2025: 'Frais 2025',
         fees2024: 'Frais 2024',
@@ -661,8 +670,10 @@ export const translations: Record<Language, Translations> = {
         concernedDwelling: 'Logement concerné:',
       },
       legalNotice: {
-        title: 'Avis important:',
-        text: 'Ce calculateur est fourni à titre indicatif seulement et reproduit la méthodologie du Tribunal administratif du logement (TAL). Le résultat obtenu ne constitue pas une décision du TAL et ne lie pas les parties. En cas de désaccord, seul le TAL peut fixer le loyer de manière obligatoire.',
+        title: 'Avis important :',
+        text: 'Ce calculateur est fourni à titre indicatif seulement et reproduit les nouvelles règles de fixation de loyer du Tribunal administratif du logement (TAL). Le résultat obtenu ne constitue pas une décision du TAL et ne lie pas les parties. En cas de désaccord, veuillez vous adresser au TAL pour fixer le loyer applicable pour le prochain terme de reconduction.',
+        warningTitle: 'Mise en garde',
+        warningText: 'En utilisant le présent calcul, l\'utilisateur reconnaît que les résultats du calculateur d\'ajustement de loyer dépendent entièrement des données qu\'il fournit. Aucune responsabilité ne peut être engagée quant aux conséquences découlant d\'informations inexactes, incomplètes ou erronées saisies par l\'utilisateur.',
       },
       actions: {
         exportPDF: 'Exporter en PDF',
@@ -693,6 +704,7 @@ export const translations: Record<Language, Translations> = {
       newRent: 'Nouveau loyer mensuel recommandé:',
       variation: 'Variation:',
       legalNotice: 'AVIS IMPORTANT',
+      warning: 'MISE EN GARDE',
       generatedOn: 'Document généré le',
       by: 'par le Calculateur CORPIQ 2026',
     },

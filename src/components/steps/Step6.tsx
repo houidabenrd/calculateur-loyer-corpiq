@@ -146,14 +146,25 @@ export const Step6: React.FC<Step6Props> = ({
         </div>
       </div>
 
-      {/* Avertissement */}
-      <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4 mb-6 flex gap-3">
+      {/* Avis important */}
+      <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4 mb-4 flex gap-3">
         <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
           <AlertTriangle size={16} className="text-amber-600" />
         </div>
         <div>
           <p className="font-bold text-amber-900 text-xs mb-0.5">{t.step5.legalNotice.title}</p>
           <p className="text-xs text-amber-800/80 leading-relaxed">{t.step5.legalNotice.text}</p>
+        </div>
+      </div>
+
+      {/* Mise en garde */}
+      <div className="bg-red-50 border border-red-200/60 rounded-xl p-4 mb-6 flex gap-3">
+        <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+          <AlertTriangle size={16} className="text-red-600" />
+        </div>
+        <div>
+          <p className="font-bold text-red-900 text-xs mb-0.5">{t.step5.legalNotice.warningTitle}</p>
+          <p className="text-xs text-red-800/80 leading-relaxed">{t.step5.legalNotice.warningText}</p>
         </div>
       </div>
 

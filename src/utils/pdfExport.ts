@@ -548,7 +548,9 @@ export const generatePDF = async (
   // ========== AVERTISSEMENT LÉGAL ==========
   checkPageBreak(30);
   doc.setFillColor(255, 248, 220);
-  doc.rect(margin, y, contentWidth, 28, 'F');
+  const avisLines = doc.splitTextToSize(t.step5.legalNotice.text, contentWidth - 8);
+  const avisHeight = 12 + avisLines.length * 4;
+  doc.rect(margin, y, contentWidth, avisHeight, 'F');
 
   doc.setTextColor(146, 100, 14);
   doc.setFontSize(8);
@@ -557,8 +559,24 @@ export const generatePDF = async (
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
-  const avisLines = doc.splitTextToSize(t.step5.legalNotice.text, contentWidth - 8);
   doc.text(avisLines, margin + 4, y + 12);
+  y += avisHeight + 6;
+
+  // ========== MISE EN GARDE ==========
+  checkPageBreak(30);
+  doc.setFillColor(255, 235, 235);
+  const warningLines = doc.splitTextToSize(t.step5.legalNotice.warningText, contentWidth - 8);
+  const warningHeight = 12 + warningLines.length * 4;
+  doc.rect(margin, y, contentWidth, warningHeight, 'F');
+
+  doc.setTextColor(160, 30, 30);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text(t.pdf.warning, margin + 4, y + 6);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.text(warningLines, margin + 4, y + 12);
 
   // ========== FOOTER DE LA DERNIÈRE PAGE ==========
   addFooter();

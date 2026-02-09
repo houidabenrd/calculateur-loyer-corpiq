@@ -81,6 +81,11 @@ export const Step1: React.FC<Step1Props> = ({
 
       {/* Ajustement de base */}
       <SectionCard title={t.step1.baseAdjustment.title} badge={1}>
+        <div className="bg-blue-50/70 border border-blue-200/50 rounded-xl p-4 mb-5">
+          <p className="text-sm text-blue-800 leading-relaxed font-medium">
+            *** {t.step1.baseAdjustment.note}
+          </p>
+        </div>
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
             <div>

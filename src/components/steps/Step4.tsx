@@ -41,7 +41,7 @@ export const Step4: React.FC<Step4Props> = ({
   onNext,
   onPrevious,
 }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const getAjustementNouvelleDepense = (ligne: LigneNouvelleDepense): number => {
     if (!calculatedValues) return 0;
     return calculAjustementNouvelleDepense(
@@ -522,18 +522,20 @@ export const Step4: React.FC<Step4Props> = ({
         </div>
       </div>
 
-      {/* Question déneigement */}
-      <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 px-4 py-3.5 mb-6" style={{boxShadow: '0 1px 4px rgba(0,0,0,0.03)'}}>
+      {/* Question déneigement (obligatoire) */}
+      <div className={`flex items-center justify-between bg-white rounded-xl border px-4 py-3.5 mb-2 transition-all ${
+        formData.hasDeneigement === null ? 'border-amber-300 ring-1 ring-amber-200' : 'border-gray-200/80'
+      }`} style={{boxShadow: '0 1px 4px rgba(0,0,0,0.03)'}}>
         <div className="flex items-center gap-2.5">
           <Snowflake size={15} className="text-sky-500 flex-shrink-0" />
-          <span className="text-sm font-bold text-gray-800">{t.step5.snowQuestion}</span>
+          <span className="text-sm font-bold text-gray-800">{t.step5.snowQuestion} <span className="text-red-500">*</span></span>
         </div>
         <div className="flex items-center bg-gray-100 rounded-lg p-0.5 ml-4 flex-shrink-0">
           <button
             type="button"
             onClick={() => updateFormData({ hasDeneigement: true })}
             className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${
-              formData.hasDeneigement
+              formData.hasDeneigement === true
                 ? 'bg-white text-corpiq-blue shadow-sm'
                 : 'text-gray-400 hover:text-gray-600'
             }`}
@@ -544,7 +546,7 @@ export const Step4: React.FC<Step4Props> = ({
             type="button"
             onClick={() => updateFormData({ hasDeneigement: false, deneigement: { frais2025: 0, frais2024: 0, ajustement: 0 } })}
             className={`px-3.5 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${
-              !formData.hasDeneigement
+              formData.hasDeneigement === false
                 ? 'bg-white text-corpiq-blue shadow-sm'
                 : 'text-gray-400 hover:text-gray-600'
             }`}
@@ -553,10 +555,14 @@ export const Step4: React.FC<Step4Props> = ({
           </button>
         </div>
       </div>
+      {formData.hasDeneigement === null && (
+        <p className="text-xs text-amber-600 mb-4 ml-1 font-medium">{t.common.required} {language === 'fr' ? 'Veuillez répondre à cette question avant de continuer.' : 'Please answer this question before continuing.'}</p>
+      )}
 
       <NavigationButtons 
         onPrevious={onPrevious}
         onNext={onNext}
+        nextDisabled={formData.hasDeneigement === null}
         previousLabel={t.common.previous}
         nextLabel={t.common.next}
       />

@@ -7,7 +7,7 @@ import {
   LabelWithTooltip,
   NavigationButtons,
 } from '../ui';
-import { Snowflake, Info } from 'lucide-react';
+import { Snowflake } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 interface Step5Props {
@@ -42,17 +42,7 @@ export const Step5: React.FC<Step5Props> = ({
 
   return (
     <div>
-      <SectionCard title={t.step5.snowRemoval.title} badge={5} tooltip={t.step5.snowRemoval.tooltip}>
-        {/* Note */}
-        <div className="bg-sky-50/80 border border-sky-200/50 rounded-xl p-4 mb-5">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center flex-shrink-0">
-              <Info size={15} className="text-sky-600" />
-            </div>
-            <p className="text-sm text-sky-800/90 leading-relaxed">{t.step5.snowRemoval.note}</p>
-          </div>
-        </div>
-
+      <SectionCard title={t.step5.snowRemoval.title} badge={5}>
         {/* Champs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
