@@ -463,7 +463,7 @@ export const translations: Record<Language, Translations> = {
       },
       legalNotice: {
         title: 'Important notice:',
-        text: 'This calculator is provided for informational purposes only and reproduces the new rent fixing rules of the Administrative Housing Tribunal (TAL). The result obtained does not constitute a TAL decision and does not bind the parties. In case of disagreement, please contact the TAL to set the rent applicable for the next renewal term.',
+        text: 'This calculator is provided for informational purposes only and reproduces the new rent fixing rules of the Administrative Housing Tribunal (TAL). The result obtained does not constitute a TAL decision and does not bind the parties. In case of disagreement, please contact the TAL to open an application to set the rent applicable for the next renewal term.',
         warningTitle: 'Disclaimer',
         warningText: 'By using this calculation, the user acknowledges that the results of the rent adjustment calculator depend entirely on the data provided. No liability can be incurred for consequences arising from inaccurate, incomplete, or erroneous information entered by the user.',
       },
