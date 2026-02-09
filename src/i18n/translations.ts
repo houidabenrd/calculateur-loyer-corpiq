@@ -349,8 +349,8 @@ export const translations: Record<Language, Translations> = {
     },
     step3: {
       title: 'Major repairs or improvements',
-      tooltip: 'Major repairs or improvements give rise to capital expenditures, which are not part of the recurring expenses you regularly assume for the building. These may include work to repair or modify the main structural elements of the building (e.g., roof, plumbing, heating system, insulation, windows, exterior cladding, foundation, French drain, electrical panel) or renovation work (e.g., replacement of cabinets, countertops, plumbing, ceramic, or flooring) in dwellings or common areas.\n\nAnnex I of the Regulation amending the Regulation respecting the criteria for the fixing of rent also provides a list of expenses related to major repairs and improvements.',
-      howItWorks: 'How it works:',
+      tooltip: 'Major repairs or improvements give rise to capital expenditures, which are not part of the recurring expenses you regularly assume for the building. These may include work to repair or modify the main structural elements of the building (e.g., roof, plumbing, heating system, insulation, windows, exterior cladding, foundation, French drain, electrical panel) or renovation work (e.g., replacement of cabinets, countertops, plumbing, ceramic, or flooring) in dwellings or common areas.',
+      howItWorks: 'Note:',
       howItWorksNote: 'The adjustment in this section already accounts for the 5% rate applicable to major repairs and improvements, allowing amortization over a period of 20 years. Therefore, to calculate this adjustment, expenses are multiplied by 5%, divided by 12, and multiplied by the proportional share attributable to the concerned dwelling.',
       noRepairs: 'No major repair or improvement added.',
       addRepair: 'Add a repair',
@@ -579,8 +579,8 @@ export const translations: Record<Language, Translations> = {
     },
     step3: {
       title: 'Réparations ou améliorations majeures',
-      tooltip: 'Les réparations ou améliorations majeures donnent lieu à des dépenses d\'immobilisation, qui ne font pas partie des dépenses récurrentes que vous assumez régulièrement pour l\'immeuble. Il peut s\'agir de travaux visant à réparer ou modifier les principaux éléments de la structure de l\'immeuble (p. ex. : toit, tuyauterie, système de chauffage, isolation, fenestration, revêtement extérieur, fondation, drain français, panneau électrique) ou de travaux de rénovation (p. ex. : remplacement des armoires, comptoirs, de la plomberie, de la céramique ou du plancher) dans les logements ou les espaces communs.\n\nL\'annexe I du Règlement modifiant le Règlement sur les critères de fixation de loyer prévoit également une liste de dépenses rattachées aux réparations et améliorations majeures.',
-      howItWorks: 'Comment ça fonctionne:',
+      tooltip: 'Les réparations ou améliorations majeures donnent lieu à des dépenses d\'immobilisation, qui ne font pas partie des dépenses récurrentes que vous assumez régulièrement pour l\'immeuble. Il peut s\'agir de travaux visant à réparer ou modifier les principaux éléments de la structure de l\'immeuble (p. ex. : toit, tuyauterie, système de chauffage, isolation, fenestration, revêtement extérieur, fondation, drain français, panneau électrique) ou de travaux de rénovation (p. ex. : remplacement des armoires, comptoirs, de la plomberie, de la céramique ou du plancher) dans les logements ou les espaces communs.',
+      howItWorks: 'Note :',
       howItWorksNote: 'L\'ajustement au niveau de cette section tient déjà compte du taux de 5 % applicable aux réparations et améliorations majeures, permettant un amortissement sur une période de 20 ans. Donc, pour calculer cet ajustement, les dépenses sont multipliées par 5%, divisées par 12 et multipliées par la quote-part attribuable au logement concerné.',
       noRepairs: 'Aucune réparation ou amélioration majeure ajoutée.',
       addRepair: 'Ajouter une réparation',
