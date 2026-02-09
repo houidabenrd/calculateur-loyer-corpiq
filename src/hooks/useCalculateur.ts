@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { FormData, initialFormData, CalculatedValues, LigneReparation, LigneNouvelleDepense, LigneVariationAide } from '../types';
 import { calculerToutesLesValeurs } from '../utils/calculations';
 
@@ -9,7 +9,6 @@ const generateId = () => Math.random().toString(36).substring(2, 11);
 
 export const useCalculateur = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [calculatedValues, setCalculatedValues] = useState<CalculatedValues | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,11 +45,8 @@ export const useCalculateur = () => {
     return () => clearTimeout(timeoutId);
   }, [formData, isLoading]);
 
-  // Recalculer les valeurs à chaque changement
-  useEffect(() => {
-    const values = calculerToutesLesValeurs(formData);
-    setCalculatedValues(values);
-  }, [formData]);
+  // Recalculer les valeurs en temps réel (synchrone, pendant le rendu)
+  const calculatedValues = useMemo(() => calculerToutesLesValeurs(formData), [formData]);
 
   // Mise à jour partielle du formulaire
   const updateFormData = useCallback((updates: Partial<FormData>) => {
