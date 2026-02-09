@@ -7,6 +7,17 @@ interface InfoTooltipProps {
   content: string;
 }
 
+const renderFormattedText = (text: string) => {
+  // Support **bold** markers
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-gray-900">{part.slice(2, -2)}</strong>;
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+};
+
 export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const isLongContent = content.length > 200;
@@ -39,7 +50,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
                       style={{background: 'linear-gradient(135deg, rgba(19,49,92,0.08), rgba(37,99,235,0.08))'}}>
                       <Info size={14} className="text-corpiq-blue" />
                     </div>
-                    <span className="whitespace-pre-line text-[13px] text-gray-700 leading-relaxed">{content}</span>
+                    <span className="whitespace-pre-line text-[13px] text-gray-700 leading-relaxed">{renderFormattedText(content)}</span>
                   </div>
                 </div>
               </div>
@@ -87,7 +98,7 @@ export const InfoTooltip: React.FC<InfoTooltipProps> = ({ content }) => {
               </div>
             </div>
             <div className="p-6 overflow-y-auto max-h-[calc(80vh-5rem)] text-[14px] text-gray-700 leading-[1.7] whitespace-pre-line">
-              {content}
+              {renderFormattedText(content)}
             </div>
           </div>
         </div>
@@ -148,7 +159,7 @@ const HeaderTooltip: React.FC<{ content: string }> = ({ content }) => {
                       style={{background: 'linear-gradient(135deg, rgba(19,49,92,0.08), rgba(37,99,235,0.08))'}}>
                       <Info size={14} className="text-corpiq-blue" />
                     </div>
-                    <span className="whitespace-pre-line text-[13px] text-gray-700 leading-relaxed">{content}</span>
+                    <span className="whitespace-pre-line text-[13px] text-gray-700 leading-relaxed">{renderFormattedText(content)}</span>
                   </div>
                 </div>
               </div>
@@ -192,7 +203,7 @@ const HeaderTooltip: React.FC<{ content: string }> = ({ content }) => {
               </div>
             </div>
             <div className="p-6 overflow-y-auto max-h-[calc(80vh-5rem)] text-[14px] text-gray-700 leading-[1.7] whitespace-pre-line">
-              {content}
+              {renderFormattedText(content)}
             </div>
           </div>
         </div>
