@@ -124,7 +124,7 @@ export const Step1: React.FC<Step1Props> = ({
             {formData.isRPA && (
               <div>
                 <LabelWithTooltip htmlFor="partServices" required>
-                  Part des services à la personne
+                  {t.step1.baseAdjustment.rpaServicesPortion}
                 </LabelWithTooltip>
                 <CurrencyInput
                   id="partServices"
@@ -161,23 +161,23 @@ export const Step1: React.FC<Step1Props> = ({
           {/* RPA */}
           {formData.isRPA && (
             <div className="bg-blue-50/70 p-5 rounded-xl border border-blue-200/60">
-              <h4 className="font-bold text-corpiq-blue mb-4 text-xs uppercase tracking-wider">Calcul RPA (2 blocs)</h4>
+              <h4 className="font-bold text-corpiq-blue mb-4 text-xs uppercase tracking-wider">{t.step1.baseAdjustment.rpaTitle}</h4>
               
               <div className="bg-white/80 p-4 rounded-lg mb-3 border border-blue-100/50">
                 <div className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">
-                  Bloc A — Services à la personne (taux fixe 6,7%)
+                  {t.step1.baseAdjustment.rpaBlocATitle}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-500 text-xs">Montant:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaAmount}</span>
                     <span className="ml-2 font-bold tabular-nums">{formatCurrency(formData.partServicesPersonne || 0)}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-xs">Taux:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaRate}</span>
                     <span className="ml-2 font-bold tabular-nums">{((calculatedValues?.tauxServicesAines || 0) * 100).toFixed(1)} %</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-xs">Ajustement:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaAdjustment}</span>
                     <span className="ml-2 font-bold text-corpiq-blue tabular-nums">{formatCurrency(calculatedValues?.ajustementServices || 0)}</span>
                   </div>
                 </div>
@@ -185,19 +185,19 @@ export const Step1: React.FC<Step1Props> = ({
               
               <div className="bg-white/80 p-4 rounded-lg mb-3 border border-blue-100/50">
                 <div className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">
-                  Bloc B — Loyer sans services (taux IPC)
+                  {t.step1.baseAdjustment.rpaBlocBTitle}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-500 text-xs">Montant:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaAmount}</span>
                     <span className="ml-2 font-bold tabular-nums">{formatCurrency(formData.loyerMensuelActuel - (formData.partServicesPersonne || 0))}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-xs">Taux:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaRate}</span>
                     <span className="ml-2 font-bold tabular-nums">{((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)} %</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-xs">Ajustement:</span>
+                    <span className="text-gray-500 text-xs">{t.step1.baseAdjustment.rpaAdjustment}</span>
                     <span className="ml-2 font-bold text-corpiq-blue tabular-nums">{formatCurrency(calculatedValues?.ajustementSansServices || 0)}</span>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export const Step1: React.FC<Step1Props> = ({
               
               <div className="border-t border-blue-200/60 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-sm">Ajustement de base total (Bloc A + Bloc B)</span>
+                  <span className="font-bold text-sm">{t.step1.baseAdjustment.rpaTotalAdjustment}</span>
                   <CalculatedField value={calculatedValues?.ajustementBase || 0} highlight={formData.loyerMensuelActuel > 0} />
                 </div>
               </div>

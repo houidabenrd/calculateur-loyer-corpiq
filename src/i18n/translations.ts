@@ -62,6 +62,14 @@ export interface Translations {
       ipcVariationTooltip: string;
       baseAdjustment: string;
       baseAdjustmentTooltip: string;
+      rpaServicesPortion: string;
+      rpaTitle: string;
+      rpaBlocATitle: string;
+      rpaBlocBTitle: string;
+      rpaAmount: string;
+      rpaRate: string;
+      rpaAdjustment: string;
+      rpaTotalAdjustment: string;
     };
     buildingRevenue: {
       title: string;
@@ -309,6 +317,14 @@ export const translations: Record<Language, Translations> = {
         ipcVariationTooltip: 'Rate set by the TAL for 2026 based on the average CPI of the last 3 years',
         baseAdjustment: 'Base monthly rent adjustment',
         baseAdjustmentTooltip: 'Rent × CPI Rate',
+        rpaServicesPortion: 'Personal services portion',
+        rpaTitle: 'RPA Calculation (2 blocks)',
+        rpaBlocATitle: 'Block A — Personal services (fixed rate 6.7%)',
+        rpaBlocBTitle: 'Block B — Rent excluding services (CPI rate)',
+        rpaAmount: 'Amount:',
+        rpaRate: 'Rate:',
+        rpaAdjustment: 'Adjustment:',
+        rpaTotalAdjustment: 'Total base adjustment (Block A + Block B)',
       },
       buildingRevenue: {
         title: 'Revenue from the building',
@@ -542,6 +558,14 @@ export const translations: Record<Language, Translations> = {
         ipcVariationTooltip: 'Taux fixé par le TAL pour 2026 basé sur la moyenne de l\'IPC des 3 dernières années',
         baseAdjustment: 'Ajustement de base du loyer mensuel',
         baseAdjustmentTooltip: 'Loyer × Taux IPC',
+        rpaServicesPortion: 'Part des services à la personne',
+        rpaTitle: 'Calcul RPA (2 blocs)',
+        rpaBlocATitle: 'Bloc A — Services à la personne (taux fixe 6,7%)',
+        rpaBlocBTitle: 'Bloc B — Loyer sans services (taux IPC)',
+        rpaAmount: 'Montant:',
+        rpaRate: 'Taux:',
+        rpaAdjustment: 'Ajustement:',
+        rpaTotalAdjustment: 'Ajustement de base total (Bloc A + Bloc B)',
       },
       buildingRevenue: {
         title: 'Revenus de l\'immeuble',
