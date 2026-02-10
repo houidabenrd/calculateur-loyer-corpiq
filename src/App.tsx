@@ -145,6 +145,12 @@ function App() {
         <StepIndicator currentStep={visualCurrentStep} totalSteps={totalVisualSteps} steps={activeSteps}
           onStepClick={handleStepClick} canAccessStep={handleCanAccessStep} disabledMessage={t.common.completePreviousSteps} />
 
+        <div className="mt-3 mb-4 px-4 py-2.5 bg-amber-50/80 border border-amber-200/60 rounded-xl">
+          <p className="text-xs text-amber-800 leading-relaxed text-center font-medium">
+            {t.common.applicabilityNote}
+          </p>
+        </div>
+
         {/* Step title */}
         <div className="mb-6 animate-fade-in">
           <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-md bg-corpiq-blue/5 text-corpiq-blue">

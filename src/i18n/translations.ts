@@ -237,6 +237,7 @@ export interface Translations {
     required: string;
     delete: string;
     completePreviousSteps: string;
+    applicabilityNote: string;
     yes: string;
     no: string;
   };
@@ -482,6 +483,7 @@ export const translations: Record<Language, Translations> = {
       required: '*',
       delete: 'Delete',
       completePreviousSteps: 'Complete previous steps first',
+      applicabilityNote: 'This calculation is applicable to renewal notices sent from January 1, 2026 and to leases whose renewal takes place between April 2, 2026 and April 1, 2027.',
       yes: 'Yes',
       no: 'No',
     },
@@ -723,6 +725,7 @@ export const translations: Record<Language, Translations> = {
       required: '*',
       delete: 'Supprimer',
       completePreviousSteps: 'Complétez les étapes précédentes d\'abord',
+      applicabilityNote: 'Le présent calcul est applicable aux avis de reconduction transmis à partir du 1er janvier 2026 et aux baux dont le renouvellement intervient entre le 2 avril 2026 et le 1er avril 2027.',
       yes: 'Oui',
       no: 'Non',
     },

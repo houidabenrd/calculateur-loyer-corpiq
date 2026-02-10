@@ -166,7 +166,18 @@ export const generatePDF = async (
   doc.setFontSize(9);
   doc.setFont('helvetica', 'italic');
   doc.text(`${t.pdf.generatedOn} ${generationDate}`, margin, y);
-  y += 5;
+  y += 6;
+
+  // Note d'applicabilité
+  doc.setTextColor(80, 80, 80);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'italic');
+  const applicabilityLines = doc.splitTextToSize(t.common.applicabilityNote, contentWidth);
+  applicabilityLines.forEach((line: string) => {
+    doc.text(line, margin, y);
+    y += 4;
+  });
+  y += 2;
 
   addSeparator();
   y += 2;
