@@ -483,7 +483,7 @@ export const generatePDF = async (
 
   // Tableau récap
   const ajustements = [
-    [`1. ${t.step5.summary.baseAdjustment.replace('{rate}', (calculatedValues.tauxIPC * 100).toFixed(1))}`, formatCurrency(calculatedValues.ajustementBase)],
+    [`1. ${t.step5.summary.baseAdjustment}`, formatCurrency(calculatedValues.ajustementBase)],
     [`2. ${t.step5.summary.taxesAndInsurance}`, formatCurrency(calculatedValues.totalAjustementTaxesAssurances)],
     [`3. ${t.step5.summary.majorRepairs}`, formatCurrency(calculatedValues.totalAjustementReparations)],
     [`4. ${t.step5.summary.newExpenses}`, formatCurrency(calculatedValues.totalSection4)],

@@ -39,7 +39,7 @@ export const Step6: React.FC<Step6Props> = ({
   }, [formData, calculatedValues]);
 
   const summaryRows = [
-    { badge: '1', label: t.step5.summary.baseAdjustment.replace('{rate}', ((calculatedValues?.tauxIPC || 0) * 100).toFixed(1)), value: calculatedValues?.ajustementBase || 0 },
+    { badge: '1', label: t.step5.summary.baseAdjustment, value: calculatedValues?.ajustementBase || 0 },
     { badge: '2', label: t.step5.summary.taxesAndInsurance, value: calculatedValues?.totalAjustementTaxesAssurances || 0 },
     { badge: '3', label: t.step5.summary.majorRepairs, value: calculatedValues?.totalAjustementReparations || 0 },
     { badge: '4', label: t.step5.summary.newExpenses, value: calculatedValues?.totalSection4 || 0 },
